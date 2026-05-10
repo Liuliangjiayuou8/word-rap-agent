@@ -19,6 +19,16 @@
 - 正式地址：`https://word-rap-agent.onrender.com`
 - 免费版 Render 会冷启动，长时间无人访问后首次打开可能需要等待几十秒
 
+## 项目截图
+
+### 首页概览
+
+![一词成歌 RAP 智能体首页](./docs/assets/screenshot-home.png)
+
+### 完整页面预览
+
+![一词成歌 RAP 智能体完整页面](./docs/assets/screenshot-full.png)
+
 ## 使用说明
 
 1. 在输入区填写一个词、一句话、一首诗，或一段文稿。
