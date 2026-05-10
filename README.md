@@ -29,6 +29,10 @@ http://127.0.0.1:4173/
 - Render
 - Railway
 
+### 一键部署到 Render
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Liuliangjiayuou8/word-rap-agent)
+
 参考：
 
 - [网页部署说明](./docs/05-web-deploy.md)
