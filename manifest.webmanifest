@@ -1,0 +1,19 @@
+{
+  "name": "一词成歌 RAP 智能体",
+  "short_name": "一词成歌",
+  "description": "输入一个词、一句话或一段文稿，生成中文说唱，并可进一步唱出来。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

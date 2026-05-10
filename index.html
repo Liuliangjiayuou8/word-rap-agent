@@ -1,0 +1,4200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080808" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="一词成歌" />
+  <meta name="application-name" content="一词成歌" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <title>一词成歌 · RAP 智能体</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-soft: #0d0d0d;
+      --panel: rgba(15, 15, 15, 0.92);
+      --panel-2: rgba(255, 255, 255, 0.04);
+      --text: #f2f2f2;
+      --muted: rgba(242, 242, 242, 0.72);
+      --muted-2: rgba(242, 242, 242, 0.52);
+      --line: rgba(255, 255, 255, 0.14);
+      --accent: #ffffff;
+      --accent-2: #d9d9d9;
+      --accent-3: #aaaaaa;
+      --good: #ffffff;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --font-serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+      --font-mono: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: var(--font-sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 34%),
+        radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.05), transparent 28%),
+        linear-gradient(180deg, #020202 0%, #111111 100%);
+      overflow-x: hidden;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.26), rgba(0,0,0,0));
+      opacity: 0.35;
+    }
+
+    .wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 4px;
+    }
+
+    .brand {
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      padding: 22px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+        rgba(12, 12, 12, 0.86);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      position: relative;
+      overflow: hidden;
+      min-height: 220px;
+    }
+
+    .brand::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background: radial-gradient(circle at 20% 20%, rgba(247, 200, 115, 0.15), transparent 26%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 11px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 42px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.45;
+    }
+
+    h1 {
+      margin: 14px 0 0;
+      font-family: var(--font-serif);
+      font-size: clamp(32px, 5vw, 58px);
+      line-height: 1;
+      letter-spacing: -0.05em;
+      max-width: none;
+      position: relative;
+      z-index: 1;
+      white-space: nowrap;
+    }
+
+    .lede {
+      margin: 12px 0 0;
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 72ch;
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric {
+      padding: 12px 12px 14px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .metric .label {
+      color: var(--muted-2);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .metric .value {
+      margin-top: 8px;
+      font-family: var(--font-serif);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .metric .desc {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .control-card {
+      border-radius: 32px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 300px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .field {
+      display: grid;
+      gap: 10px;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .field-row > * {
+      flex: 1;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px 16px;
+      outline: none;
+      font: inherit;
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: rgba(247, 200, 115, 0.55);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .chips, .sample-list, .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip, .sample, .btn {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+      font: inherit;
+    }
+
+    .chip:hover, .sample:hover, .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(247, 200, 115, 0.42);
+    }
+
+    .btn.click-flash,
+    .chip.click-flash,
+    .sample.click-flash,
+    .voice-group-chip.click-flash,
+    .settings-toggle.click-flash {
+      animation: buttonFlash 0.28s ease;
+    }
+
+    @keyframes buttonFlash {
+      0% {
+        background: rgba(255, 77, 77, 0.06);
+        border-color: rgba(255, 77, 77, 0.85);
+        box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.0);
+      }
+      45% {
+        background: rgba(255, 77, 77, 0.24);
+        border-color: rgba(255, 77, 77, 1);
+        box-shadow: 0 0 0 6px rgba(255, 77, 77, 0.12);
+      }
+      100% {
+        background: inherit;
+        border-color: inherit;
+        box-shadow: none;
+      }
+    }
+
+    .chip.active {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
+      border-color: rgba(255, 255, 255, 0.52);
+      color: #ffffff;
+    }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .range-value {
+      min-width: 54px;
+      text-align: right;
+      font-family: var(--font-mono);
+      color: var(--accent);
+    }
+
+    .btn.primary {
+      background: #f5f5f5;
+      color: #111;
+      border-color: #f5f5f5;
+      font-weight: 700;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .btn.red-emphasis,
+    .btn.primary.click-flash {
+      background: rgba(255, 77, 77, 0.18);
+      color: #fff;
+      border-color: rgba(255, 77, 77, 0.5);
+    }
+
+    .btn.tiny {
+      padding: 10px 12px;
+      border-radius: 14px;
+      min-width: 86px;
+      flex: 0 0 auto;
+    }
+
+    .btn.mic.active {
+      background: linear-gradient(135deg, rgba(122, 240, 216, 0.22), rgba(247, 200, 115, 0.18));
+      border-color: rgba(122, 240, 216, 0.55);
+      color: #f4fffa;
+    }
+
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .toggle input {
+      accent-color: var(--accent);
+    }
+
+    .helper {
+      font-size: 12px;
+      color: var(--muted-2);
+      line-height: 1.5;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .panel {
+      border-radius: 32px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .panel-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      margin: 0;
+      line-height: 1.05;
+    }
+
+    .panel-sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .panel-body {
+      padding: 16px 18px 18px;
+    }
+
+    .song {
+      display: grid;
+      gap: 16px;
+    }
+
+    .section {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      border-radius: 22px;
+      padding: 14px 14px 16px;
+    }
+
+    .section h3 {
+      margin: 0 0 12px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .section-header h3 {
+      margin: 0;
+    }
+
+    .question-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .question-chip {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 9px 12px;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .question-chip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(122, 240, 216, 0.42);
+    }
+
+    .conversation {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .bubble {
+      padding: 12px 14px;
+      border-radius: 16px;
+      line-height: 1.7;
+      font-size: 13px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .bubble.user {
+      background: rgba(122, 240, 216, 0.08);
+      align-self: end;
+    }
+
+    .bubble.assistant {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .status-line {
+      font-size: 12px;
+      color: var(--muted-2);
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+    }
+
+    .lyrics {
+      white-space: pre-wrap;
+      line-height: 1.9;
+      font-size: 16px;
+      color: #f7f1e7;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .prompt {
+      white-space: pre-wrap;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.75;
+      color: #d9e5ff;
+    }
+
+    .output-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .footer-hint {
+      margin-top: 18px;
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.6;
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--good);
+    }
+
+    .archive {
+      margin-top: 18px;
+    }
+
+    .archive-toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .history-item {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      overflow: hidden;
+    }
+
+    .history-item.open {
+      border-color: rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.045);
+    }
+
+    .history-head {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .history-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .history-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      line-height: 1.1;
+      margin: 0;
+    }
+
+    .history-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      font-family: var(--font-mono);
+    }
+
+    .history-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .history-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--font-mono);
+    }
+
+    .history-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .history-body {
+      padding: 14px 16px 16px;
+      display: none;
+      gap: 14px;
+    }
+
+    .history-item.open .history-body {
+      display: grid;
+    }
+
+    .history-block {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      background: rgba(0,0,0,0.26);
+      padding: 14px;
+    }
+
+    .history-block h4 {
+      margin: 0 0 10px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .history-pre {
+      margin: 0;
+      white-space: pre-wrap;
+      line-height: 1.8;
+      color: #f0f0f0;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .history-empty {
+      padding: 20px;
+      border: 1px dashed rgba(255,255,255,0.16);
+      border-radius: 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .settings-shell {
+      position: relative;
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      padding: 14px 14px 16px;
+      display: none;
+    }
+
+    .settings-shell.open {
+      display: grid;
+      gap: 14px;
+    }
+
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+    }
+
+    .settings-overlay.open {
+      display: block;
+    }
+
+    .settings-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.52);
+      backdrop-filter: blur(10px);
+    }
+
+    .settings-panel {
+      position: relative;
+      z-index: 1;
+      width: min(1040px, calc(100vw - 32px));
+      max-height: min(88vh, 980px);
+      overflow: auto;
+      margin: 24px auto;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(10, 10, 10, 0.98);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .settings-tabs {
+      display: flex;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .settings-tab {
+      flex: 0 0 auto;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .settings-tab.active {
+      background: #f5f5f5;
+      color: #111;
+      border-color: #f5f5f5;
+      font-weight: 700;
+    }
+
+    .settings-pane {
+      display: none;
+    }
+
+    .settings-pane.active {
+      display: block;
+    }
+
+    .combo-field {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .combo-field input[type="text"] {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .combo-field select {
+      width: 180px;
+      flex: 0 0 180px;
+    }
+
+    .voice-cast {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding: 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.035);
+    }
+
+    .voice-group-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .voice-group-chip {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .voice-group-chip.active {
+      background: #f5f5f5;
+      color: #111;
+      border-color: #f5f5f5;
+      font-weight: 700;
+    }
+
+    .voice-cast-meta {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sing-action-wrap {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .sing-state-panel {
+      display: none;
+      border: 1px solid rgba(255,77,77,0.22);
+      background: linear-gradient(180deg, rgba(255,77,77,0.08), rgba(255,255,255,0.03));
+      border-radius: 20px;
+      padding: 14px;
+      gap: 10px;
+    }
+
+    .sing-state-panel.active {
+      display: grid;
+    }
+
+    .sing-state-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .sing-state-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .sing-state-detail {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .sing-state-meta {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #ff6b6b;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sing-state-track {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,77,77,0.10);
+      border: 1px solid rgba(255,77,77,0.20);
+    }
+
+    .sing-state-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ff5a5a, #ff2d2d);
+      transition: width 0.2s ease;
+    }
+
+    .music-subtitles {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 12px;
+      background: rgba(255,255,255,0.03);
+      gap: 10px;
+    }
+
+    .music-subtitles.active {
+      display: grid;
+    }
+
+    .music-subtitles-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .music-subtitles-track {
+      display: grid;
+      gap: 10px;
+      max-height: none;
+      overflow: visible;
+      padding-right: 4px;
+    }
+
+    .music-subtitle-section {
+      display: grid;
+      gap: 8px;
+      padding: 12px 0 4px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .music-subtitle-section:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .music-subtitle-section-title {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--muted-2);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .music-subtitle-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      max-width: 100%;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.025);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 12px 12px;
+      font: inherit;
+      line-height: 1.65;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .music-subtitle-line:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.24);
+    }
+
+    .music-subtitle-line.active {
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(240,240,240,0.94));
+      color: #111;
+      border-color: rgba(255,255,255,0.98);
+      font-weight: 700;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+      transform: scale(1.01);
+    }
+
+    .music-subtitle-line.past {
+      color: rgba(242, 242, 242, 0.7);
+    }
+
+    .music-subtitle-time {
+      flex: 0 0 auto;
+      min-width: 52px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: inherit;
+      opacity: 0.72;
+      padding-top: 2px;
+    }
+
+    .music-subtitle-line.active .music-subtitle-time {
+      opacity: 0.72;
+    }
+
+    .music-subtitle-text {
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .music-subtitles-now {
+      display: grid;
+      gap: 6px;
+      padding: 10px 12px 12px;
+      border-radius: 18px;
+      background: rgba(255,77,77,0.06);
+      border: 1px solid rgba(255,77,77,0.18);
+    }
+
+    .music-subtitles-now-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #ff6b6b;
+    }
+
+    .music-subtitles-now-line {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+      min-height: 26px;
+    }
+
+    .history-shell {
+      display: grid;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .archive-footer {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .archive-footer-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .archive-footer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .archive-column {
+      min-height: 100%;
+    }
+
+    .archive-column .panel-body {
+      display: grid;
+      gap: 12px;
+    }
+
+    .archive.inline-archive {
+      margin-top: 0;
+    }
+
+    .history-filter-row {
+      margin-bottom: 14px;
+    }
+
+    .history-filter-row .combo-field select {
+      width: 100%;
+      flex: 1 1 auto;
+    }
+
+    .settings-shell-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-shell-title {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .settings-shell-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .settings-shell-grid .field {
+      gap: 8px;
+    }
+
+    .settings-shell-grid .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .settings-shell-grid .field.half {
+      grid-column: span 1;
+    }
+
+    .settings-toggle {
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .settings-toggle:hover {
+      border-color: rgba(255,255,255,0.34);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .settings-toggle.install {
+      border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .settings-toggle.install[hidden] {
+      display: none;
+    }
+
+    .generation-board {
+      margin: 14px 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.03);
+      padding: 14px 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .generation-board-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .generation-board-title {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 20px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .generation-board-sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #generationStatusText,
+    #generationStatusMeta,
+    #generationStageLabel,
+    #generationStageHint,
+    #singMeta,
+    #musicSubtitlesMeta,
+    .generation-track-meta {
+      color: var(--muted);
+    }
+
+    .generation-track {
+      display: grid;
+      gap: 8px;
+    }
+
+    .generation-track-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,77,77,0.10);
+      overflow: hidden;
+      border: 1px solid rgba(255,77,77,0.20);
+    }
+
+    .generation-track-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ff5a5a, #ff2d2d);
+      transition: width 0.22s ease;
+    }
+
+    .generation-track-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .generation-steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .generation-step {
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 9px 11px;
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.4;
+      min-height: 52px;
+    }
+
+    .generation-step.active {
+      border-color: rgba(255,255,255,0.44);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    .generation-step.done {
+      border-color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.88);
+    }
+
+    .generation-step .step-label {
+      display: block;
+      margin-bottom: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: inherit;
+    }
+
+    .tooltip-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      cursor: help;
+      text-decoration: underline dotted rgba(255,255,255,0.22);
+      text-underline-offset: 3px;
+    }
+
+    .field-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .field-help {
+      font-size: 11px;
+      color: var(--muted-2);
+      font-family: var(--font-mono);
+    }
+
+    .status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 18px currentColor;
+    }
+
+    .inline-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted-2);
+    }
+
+    .brand-signature {
+      margin: 22px 0 6px;
+      padding: 18px 10px 6px;
+      text-align: center;
+      font-family: var(--font-serif);
+      font-size: clamp(42px, 8vw, 120px);
+      line-height: 0.88;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.94);
+      text-shadow: 0 0 24px rgba(255, 77, 77, 0.24);
+      user-select: none;
+      pointer-events: none;
+      opacity: 0.92;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1100px) {
+      .hero, .main, .inline-split, .archive-footer-grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+      .brand, .control-card {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .wrap { padding: 16px; }
+      .brand, .control-card, .panel {
+        border-radius: 24px;
+      }
+      .archive-footer {
+        border-radius: 24px;
+        padding: 14px;
+      }
+      h1 {
+        font-size: 34px;
+        white-space: normal;
+      }
+      .panel-title { font-size: 22px; }
+      .lyrics { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="wrap">
+    <div id="localBanner" style="display:none;margin-bottom:18px;padding:14px 16px;border:1px solid rgba(247,200,115,.25);background:rgba(247,200,115,.08);border-radius:18px;color:#fff3d7;font-size:13px;line-height:1.6;">
+      MiniMax 唱歌模式建议通过本地服务打开，当前是 `file://` 页面。请改用
+      <a href="http://127.0.0.1:4180/index.html" style="color:#fff;text-decoration:underline;">http://127.0.0.1:4180/index.html</a>
+      这样“生成并唱出来”会更稳。
+    </div>
+    <section class="generation-board" id="generationBoard">
+      <div class="generation-board-head">
+        <div>
+          <h2 class="generation-board-title">生成进度</h2>
+          <div class="generation-board-sub" id="generationStatusText">等待开始。输入一段内容，然后点击生成。</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button class="settings-toggle install" id="installAppBtn" type="button" hidden title="把这个网页安装到桌面或主屏幕。">安装应用</button>
+          <button class="settings-toggle" id="settingsToggle" type="button" title="打开 AI 接入和生成历史设置。">AI 设置</button>
+          <div class="small" id="generationStatusMeta">0%</div>
+        </div>
+      </div>
+      <div class="generation-track">
+        <div class="generation-track-bar">
+          <div class="generation-track-fill" id="generationTrackFill"></div>
+        </div>
+        <div class="generation-track-meta">
+          <span id="generationStageLabel" title="当前生成所处的阶段，会随着流程自动变化。">待命</span>
+          <span id="generationStageHint">本地 / AI / MiniMax</span>
+        </div>
+      </div>
+      <div class="generation-steps">
+        <div class="generation-step" data-step="0"><span class="step-label">Step 1</span>读取词语与配置</div>
+        <div class="generation-step" data-step="1"><span class="step-label">Step 2</span>生成歌词 / 结构</div>
+        <div class="generation-step" data-step="2"><span class="step-label">Step 3</span>配乐与演唱</div>
+        <div class="generation-step" data-step="3"><span class="step-label">Step 4</span>渲染与归档</div>
+      </div>
+      <div class="settings-overlay" id="settingsShell" aria-hidden="true">
+        <div class="settings-backdrop" data-close-settings></div>
+        <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settingsPanelTitle">
+          <div class="settings-shell-head">
+            <div>
+              <h3 class="settings-shell-title tooltip-label" id="settingsPanelTitle" title="在这里切换 AI 接入和生成历史，两类内容独立展开。">设置</h3>
+              <div class="small">点击空白处可返回主页</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <div class="small" id="apiStatus">未配置</div>
+              <div class="small" id="musicStatus">未生成音频</div>
+              <div class="small" id="musicModelHint">当前仅保留 music-2.6</div>
+            </div>
+          </div>
+          <div class="settings-tabs" role="tablist" aria-label="设置选项">
+            <button class="settings-tab active" id="settingsTabAi" type="button" data-tab="ai" title="配置模型、密钥和音乐参数。">AI 接入</button>
+            <button class="settings-tab" id="settingsTabHistory" type="button" data-tab="history" title="查看、播放、下载或删除历史记录。">生成历史</button>
+          </div>
+          <div class="settings-pane active" id="settingsPaneAi">
+            <div class="settings-shell-grid">
+              <div class="field full">
+                <label for="providerMode">生成链路</label>
+                <select id="providerMode">
+                  <option value="local">本地歌词 + 本地展示</option>
+                  <option value="minimax-full">MiniMax 生成歌词 + MiniMax 唱出来</option>
+                  <option value="minimax-music">本地歌词 + MiniMax 唱出来</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label>生成模式</label>
+                <div class="toggle-row">
+                  <label class="toggle"><input id="aiMode" type="checkbox" /> 真实 AI 生成</label>
+                  <label class="toggle"><input id="memoryMode" type="checkbox" checked /> 追问记忆</label>
+                  <label class="toggle"><input id="rhythmMode" type="checkbox" checked /> 自动节奏整理</label>
+                </div>
+                <div class="helper">不开启 API 时，自动走本地生成器；开了 API 后，会把多轮追问和歌词结构一起发给模型。</div>
+              </div>
+              <div class="field hidden">
+                <label for="apiEndpoint">API 地址</label>
+                <input id="apiEndpoint" type="text" placeholder="https://api.openai.com/v1/chat/completions" />
+              </div>
+              <div class="field hidden">
+                <label for="apiModel">模型</label>
+                <input id="apiModel" type="text" placeholder="gpt-4o-mini" />
+              </div>
+              <div class="field full">
+                <label for="apiKey">密钥</label>
+                <input id="apiKey" type="password" placeholder="OpenAI API Key 或兼容密钥" />
+              </div>
+              <div class="field hidden">
+                <label for="musicModel">唱歌模型</label>
+                <select id="musicModel">
+                  <option value="music-2.6">music-2.6</option>
+                </select>
+              </div>
+              <div class="field hidden">
+                <label for="musicFormat">音频格式</label>
+                <select id="musicFormat">
+                  <option value="url" selected>音频 URL</option>
+                  <option value="hex">Hex 音频</option>
+                </select>
+              </div>
+              <div class="field full">
+                <div class="field-title">
+                  <label class="tooltip-label" for="apiKey" title="输入密钥后，系统会自动识别 API 地址和模型，不需要你手动填写。">自动识别</label>
+                  <span class="field-help" id="apiAutoInfo">等待输入密钥</span>
+                </div>
+                <div class="helper">地址和模型由密钥自动识别并写入本地配置；如果你切换到别的供应商，系统也会自动刷新。</div>
+              </div>
+              <div class="helper full">这里的配置只保存在本地浏览器。你也可以接你自己的中转服务。</div>
+            </div>
+            <div class="section" style="margin-top:14px;">
+              <div class="section-header">
+                <h3 class="tooltip-label" title="这份提示词和工作流会指导模型如何生成歌词和歌曲。">智能体模板</h3>
+                <span class="small">prompt + workflow</span>
+              </div>
+              <div class="section" style="margin-top:12px;">
+                <h3 class="tooltip-label" title="完整的模型输入提示词，可直接复制到你的 API 接口里。">Prompt</h3>
+                <div class="prompt" id="promptPreview"></div>
+              </div>
+              <div class="section" style="margin-top:14px;">
+                <h3 class="tooltip-label" title="从输入到生成，再到播放和归档的整体流程。">工作流</h3>
+                <div class="note" id="workflowPreview"></div>
+              </div>
+            </div>
+          </div>
+          <div class="settings-pane" id="settingsPaneHistory">
+            <div class="panel archive" id="historySectionJump">
+              <div class="panel-head">
+                <div>
+                  <h2 class="panel-title tooltip-label" title="生成历史现在移到了右侧独立档案栏。">生成历史</h2>
+                  <div class="panel-sub">历史已经放到主页面右侧的“唱出来 / 生成历史”独立栏，这里只保留跳转说明。</div>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="note">打开右侧独立档案栏，就能直接查看、播放、下载和筛选历史记录。</div>
+                <div class="output-toolbar" style="margin-top:12px;">
+                  <button class="btn primary" id="jumpArchiveBtn" type="button">跳到独立档案栏</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="hero">
+      <div class="brand">
+        <div class="eyebrow">one word in, full rap out</div>
+        <h1>一词成歌 RAP 智能体</h1>
+        <p class="lede">
+          用户可以输入一个词、一首诗、一句话，甚至一段文稿，系统都会自动提炼主题、情绪、场景和冲突，
+          再生成一首可直接唱出来的中文说唱。默认支持燃、搞笑、emo、old school、trap、国风等风格。
+        </p>
+        <div class="metrics">
+          <div class="metric">
+            <div class="label">核心能力</div>
+            <div class="value">一句词</div>
+            <div class="desc">自动扩展成完整说唱结构。</div>
+          </div>
+          <div class="metric">
+            <div class="label">输出内容</div>
+            <div class="value">歌词 + 提示词</div>
+            <div class="desc">同时给出可接入大模型的 prompt。</div>
+          </div>
+          <div class="metric">
+            <div class="label">可测试性</div>
+            <div class="value">离线可用</div>
+            <div class="desc">本地即可生成，不依赖后端。</div>
+          </div>
+        </div>
+      </div>
+
+    <div class="control-card">
+      <div class="section-title">
+        <span class="tooltip-label" title="这里设置输入内容、风格、情绪和篇幅，决定这首 rap 的整体方向。">生成设置</span>
+        <span class="status">local generator ready</span>
+      </div>
+
+        <div class="field">
+          <div class="field-title">
+            <label class="tooltip-label" for="keyword" title="你可以输入一个词、一首诗、一句话或一段文稿；系统会自动改写成说唱。">输入内容</label>
+            <span class="field-help">支持词语 / 诗 / 一句话 / 文稿</span>
+          </div>
+          <div class="field-row">
+            <textarea id="keyword" rows="3" placeholder="比如：兄弟、失恋、暴富、深夜，或者直接贴一首诗 / 一句话 / 一段文稿...">夏天</textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-title">
+            <label class="tooltip-label" for="stylePreset" title="先选基础风格，再可选输入自定义风格；自定义会覆盖默认选项。">风格</label>
+            <span class="field-help">下拉 + 自定义同栏</span>
+          </div>
+          <div class="combo-field">
+            <select id="stylePreset">
+              <option value="燃">燃</option>
+              <option value="搞笑">搞笑</option>
+              <option value="emo">emo</option>
+              <option value="old school">old school</option>
+              <option value="trap">trap</option>
+              <option value="国风">国风</option>
+              <option value="东北味">东北味</option>
+              <option value="未来感">未来感</option>
+            </select>
+            <input id="styleCustom" type="text" placeholder="自定义风格，例如：雨夜爵士、赛博禅意、东北唠嗑..." />
+          </div>
+          <div class="helper">先选一个基础风格，也可以直接输入自定义风格描述。</div>
+        </div>
+
+        <div class="inline-split">
+          <div class="field">
+            <div class="field-title">
+              <label class="tooltip-label" for="tone" title="先从情绪下拉里选一个方向，也可以在右侧补充自定义情绪描述。">情绪</label>
+              <span class="field-help">可选 + 自定义</span>
+            </div>
+            <div class="combo-field">
+              <select id="tone"></select>
+              <input id="toneCustom" type="text" placeholder="自定义情绪，例如：克制、酸涩、轻盈、悲壮..." />
+            </div>
+          </div>
+        </div>
+
+        <div class="inline-split">
+          <div class="field">
+            <label class="tooltip-label" for="bars" title="控制整首歌的长度。越长，内容越完整，越短，越适合短视频。">篇幅</label>
+            <select id="bars">
+              <option value="8">8 小节</option>
+              <option value="12" selected>12 小节</option>
+              <option value="16">16 小节</option>
+              <option value="24">24 小节</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="tooltip-label" for="audience" title="这会影响措辞、节奏和画面感，让歌词更贴合短视频、现场或聚会场景。">受众/语气</label>
+            <select id="audience">
+              <option value="短视频传播">短视频传播</option>
+              <option value="live现场">live 现场</option>
+              <option value="朋友聚会">朋友聚会</option>
+              <option value="舞台演出">舞台演出</option>
+              <option value="搞笑整活">搞笑整活</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="tooltip-label" for="energy" title="控制这首歌的能量和冲击力，数值越高越适合炸场、短视频和 live。">炸点强度</label>
+          <div class="range-row">
+            <input id="energy" type="range" min="1" max="10" value="7" />
+            <div class="range-value" id="energyValue">7/10</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="tooltip-label" for="constraints" title="这里可以补充押韵要求、结尾反转、禁用词、具体意象等。">附加约束（可选）</label>
+          <textarea id="constraints" placeholder="比如：要押“ang”韵、结尾带一句反转、不要脏话、想更像东北味..."></textarea>
+        </div>
+
+        <div class="field full">
+          <label class="tooltip-label" for="musicPrompt" title="这段提示词会影响最后唱出来的风格。">音乐提示词</label>
+          <input id="musicPrompt" type="text" placeholder="流行说唱, 热血, 舞台感, 808, 适合短视频传播" />
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="generateBtn">生成歌词</button>
+          <button class="btn secondary" id="regenBtn">再来一版</button>
+          <button class="btn secondary" id="randomBtn">随机一个词</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="main">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title tooltip-label" title="这里展示系统生成的歌词正文、节奏整理和输出摘要。">生成结果</h2>
+            <div class="panel-sub" id="resultSummary">输入一段内容后点击“生成歌词”，这里会显示整首 rap。</div>
+          </div>
+          <div class="small" id="resultMeta">ready</div>
+        </div>
+        <div class="panel-body">
+          <div class="song" id="songOutput">
+            <div class="section">
+              <h3 class="tooltip-label" title="先输入内容并生成，下面会显示歌词、节奏整理和使用提示。">使用说明</h3>
+              <div class="note">
+                这个版本默认使用本地生成器，适合你马上测试交互和文案体验。
+                如果后续要接真实大模型，只需要把右侧“提示词预览”接到你的 API 即可。
+              </div>
+            </div>
+          </div>
+          <div class="output-toolbar">
+            <button class="btn primary" id="copyBtn">复制歌词</button>
+            <button class="btn secondary" id="copyPromptBtn">复制提示词</button>
+            <button class="btn secondary" id="downloadBtn">下载 txt</button>
+          </div>
+          <div class="footer-hint">
+            支持关键词联想、结构化输出、复制、重写和本地测试。你也可以后续把它接成真正的“输入词语 -> 大模型生成 rap 歌词”的线上智能体。
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title tooltip-label" title="模型会基于当前内容给出下一步可继续追问的方向。">下一轮追问</h2>
+            <div class="panel-sub">除了点选系统建议，也可以直接输入你自己的修改方向。</div>
+          </div>
+          <div class="small" id="followUpMeta">自动生成</div>
+        </div>
+        <div class="panel-body">
+          <div class="conversation" id="conversation"></div>
+          <div class="question-bank" id="questionBank"></div>
+          <div class="field full">
+            <div class="field-title">
+              <label class="tooltip-label" for="followUpCustom" title="输入你想要下一版怎么改，比如更燃、更克制、押韵更强、加古风感。">自定义修改方向</label>
+              <span class="field-help">写完按回车也可以</span>
+            </div>
+            <div class="combo-field">
+              <input id="followUpCustom" type="text" placeholder="例如：副歌更抓耳一点，整体更像将进酒" />
+              <button class="btn secondary tiny" id="followUpApplyBtn" type="button">应用</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="archive-footer" id="mainArchiveSection">
+      <div class="archive-footer-head">
+        <div>
+          <h2 class="panel-title tooltip-label" title="把演唱控制和历史档案放在一起，方便连续测试、回放和下载。">唱出来 / 生成历史</h2>
+          <div class="panel-sub">独立放在页面最底部，横向排布，左边控制演唱，右边管理历史。</div>
+        </div>
+        <div class="small" id="archiveSuiteMeta">独立档案栏</div>
+      </div>
+      <div class="archive-footer-grid">
+        <div class="panel archive-column">
+          <div class="panel-head">
+            <div>
+              <h3 class="panel-title tooltip-label" title="选择人设后再唱出来。">唱出来</h3>
+              <div class="panel-sub">选择演唱人设、查看官方音色、生成并播放歌曲。</div>
+            </div>
+            <div class="small" id="singMeta">等待生成</div>
+          </div>
+          <div class="panel-body">
+            <div class="voice-cast">
+              <div class="field-title">
+                <label class="tooltip-label" for="voicePreset" title="选择一个演唱人设，或者直接输入人名 / 音色 ID。">演唱人设</label>
+                <span class="field-help">分类筛选 / 输入名字</span>
+              </div>
+              <div class="voice-group-row" id="voiceGroupRow">
+                <button class="voice-group-chip active" type="button" data-voice-group="all">全部</button>
+                <button class="voice-group-chip" type="button" data-voice-group="male">男声</button>
+                <button class="voice-group-chip" type="button" data-voice-group="female">女声</button>
+                <button class="voice-group-chip" type="button" data-voice-group="child">童声</button>
+                <button class="voice-group-chip" type="button" data-voice-group="elder">老年声</button>
+              </div>
+              <div class="combo-field">
+                <select id="voicePreset"></select>
+                <input id="voiceCustom" type="text" placeholder="输入人名或音色 ID，例如：王婆婆、刘爷爷、female-chengshu" />
+              </div>
+              <div class="voice-cast-meta">
+                <div class="helper">这些是我整理的常用人设 + 官方音色别名。选择后会写进提示词和历史记录；如果你后面改接语音合成，这套选择也能继续沿用。</div>
+                <div class="field-title">
+                  <label class="tooltip-label" for="voiceCatalogStatus" title="从 MiniMax 官方接口拉取当前账号可用的音色列表。">官方音色</label>
+                  <span class="field-help" id="voiceCatalogStatus">未刷新</span>
+                </div>
+                <div class="actions">
+                  <button class="btn secondary tiny" id="refreshVoiceBtn" type="button">刷新官方音色</button>
+                </div>
+              </div>
+            </div>
+            <audio id="audioPlayer" controls style="width:100%; display:none;"></audio>
+            <div class="sing-action-wrap">
+              <div class="sing-state-panel" id="singStatePanel" aria-live="polite">
+                <div class="sing-state-head">
+                  <div>
+                    <div class="sing-state-title" id="singStateTitle">等待生成</div>
+                    <div class="sing-state-detail" id="singStateDetail">会先生成歌词，再交给 MiniMax 音乐接口生成带人声的歌曲。</div>
+                  </div>
+                  <div class="sing-state-meta" id="singStateMeta">待命</div>
+                </div>
+                <div class="sing-state-track">
+                  <div class="sing-state-fill" id="singStateFill"></div>
+                </div>
+              </div>
+              <div class="output-toolbar" style="margin-top:12px;">
+                <button class="btn primary" id="singBtn">生成并唱出来</button>
+                <button class="btn secondary" id="downloadAudioBtn">下载音频</button>
+              </div>
+              <div class="helper" id="singHint">会先生成歌词，再交给 MiniMax 音乐接口生成带人声的歌曲。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel archive-column archive">
+          <div class="panel-head">
+            <div>
+              <h3 class="panel-title tooltip-label" title="这里保存每次生成的歌词、提示词和音频，方便回看、播放和下载。">生成历史</h3>
+              <div class="panel-sub">按时间从新到旧排列。可查看、播放、删除、下载，或跳到单条记录的“文件夹”。</div>
+            </div>
+            <div class="small" id="historyCount">0 条记录</div>
+          </div>
+          <div class="panel-body">
+            <div class="archive-toolbar">
+              <span>黑白档案 / 纵向排布 / 每条记录独立展开</span>
+              <span>点击“文件夹”查看完整内容</span>
+            </div>
+            <div class="history-filter-row">
+              <div class="field full">
+                <div class="field-title">
+                  <label class="tooltip-label" for="historyVoiceFilter" title="按分类或具体人设筛选历史记录，方便快速找到某种唱法。">人声筛选</label>
+                  <span class="field-help">按人设 / 分类筛选</span>
+                </div>
+                <div class="combo-field">
+                  <select id="historyVoiceFilter"></select>
+                </div>
+              </div>
+            </div>
+            <div class="history-list" id="historyList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="brand-signature" aria-hidden="true">MaoSan</div>
+
+  </div>
+
+  <script>
+    const styles = [
+      { id: "燃", label: "燃", vibe: "热血、冲劲、舞台感" },
+      { id: "搞笑", label: "搞笑", vibe: "整活、反差、轻松" },
+      { id: "emo", label: "emo", vibe: "克制、孤独、夜色感" },
+      { id: "oldschool", label: "old school", vibe: "经典、稳、拍点清晰" },
+      { id: "trap", label: "trap", vibe: "重低音、弹跳、当代感" },
+      { id: "国风", label: "国风", vibe: "画面感、典故、东方气质" },
+      { id: "东北味", label: "东北味", vibe: "口语、松弛、生活流" },
+      { id: "未来感", label: "未来感", vibe: "冷感、科技、赛博" }
+    ];
+
+    const tones = [
+      "热血上头", "轻松戏谑", "深夜emo", "硬核自信", "松弛幽默", "浪漫克制", "街头气质"
+    ];
+
+    const randomWords = ["夏天", "兄弟", "失恋", "暴富", "深夜", "梦想", "出租屋", "上班", "自由"];
+
+    const voicePresets = [
+      { value: "female-chengshu", group: "elder", label: "王婆婆 · 成熟松弛", aliases: ["王婆婆", "婆婆", "成熟女声", "松弛女声"] },
+      { value: "Chinese (Mandarin)_Reliable_Executive", group: "elder", label: "刘爷爷 · 沉稳高管", aliases: ["刘爷爷", "爷爷", "高管", "沉稳男声"] },
+      { value: "male-qn-jingying", group: "male", label: "李大哥 · 精英男声", aliases: ["李大哥", "大哥", "精英男声"] },
+      { value: "female-yujie", group: "female", label: "赵大姐 · 御姐说唱", aliases: ["赵大姐", "大姐", "御姐"] },
+      { value: "female-tianmei", group: "female", label: "钱妹妹 · 甜美女声", aliases: ["钱妹妹", "妹妹", "甜妹", "甜美女声"] },
+      { value: "male-qn-daxuesheng", group: "male", label: "孙小弟 · 青年学弟", aliases: ["孙小弟", "小弟", "学弟", "大学生"] },
+      { value: "Chinese (Mandarin)_News_Anchor", group: "elder", label: "周主播 · 新闻播报", aliases: ["周主播", "主播", "新闻女声", "播音腔"] },
+      { value: "male-qn-qingse", group: "male", label: "小青 · 青涩青年", aliases: ["小青", "青涩青年", "青涩男声"] },
+      { value: "badao_shaoye", group: "male", label: "霸道少爷 · 强势少爷", aliases: ["霸道少爷", "少爷", "霸总"] },
+      { value: "wumei_yujie", group: "female", label: "妩媚御姐 · 贴脸感", aliases: ["妩媚御姐", "媚感女声"] },
+      { value: "chunzhen_xuedi", group: "male", label: "纯真学弟 · 清爽少年", aliases: ["纯真学弟", "学弟", "清爽少年"] },
+      { value: "lengdan_xiongzhang", group: "male", label: "冷淡学长 · 低温感", aliases: ["冷淡学长", "学长", "冷淡男声"] },
+      { value: "cute_boy", group: "child", label: "可爱男童 · 童声", aliases: ["可爱男童", "童声", "小男孩"] },
+      { value: "lovely_girl", group: "child", label: "萌萌女童 · 童声", aliases: ["萌萌女童", "童声女", "小女孩"] }
+    ];
+
+    const energyMap = {
+      1: "极简",
+      2: "轻量",
+      3: "收着点",
+      4: "稳一点",
+      5: "中等",
+      6: "有劲",
+      7: "很冲",
+      8: "炸场",
+      9: "高压",
+      10: "爆点"
+    };
+
+    const MINIMAX_PROXY_BASE = location.protocol === "file:"
+      ? "http://127.0.0.1:4180"
+      : location.origin;
+    const localBanner = document.getElementById("localBanner");
+
+    const rhymePools = {
+      ang: ["光芒", "回响", "场上", "张扬", "老墙", "方向", "锋芒", "中央"],
+      ing: ["心境", "晶莹", "回应", "前行", "共鸣", "命令", "星星", "安静"],
+      an: ["远岸", "期盼", "不凡", "海滩", "答案", "孤单", "平凡", "勇敢"],
+      ao: ["怒潮", "口号", "闪耀", "热闹", "风暴", "燃烧", "高潮", "发烧"],
+      ei: ["堡垒", "黑夜", "飞跃", "无畏", "纯粹", "疲惫", "斜对", "后退"],
+      u: ["迷雾", "孤独", "征途", "温度", "天赋", "地图", "脚步", "不服"]
+    };
+
+    const stylePresetInput = document.getElementById("stylePreset");
+    const styleCustomInput = document.getElementById("styleCustom");
+    const toneSelect = document.getElementById("tone");
+    const output = document.getElementById("songOutput");
+    const promptPreview = document.getElementById("promptPreview");
+    const workflowPreview = document.getElementById("workflowPreview");
+    const keywordInput = document.getElementById("keyword");
+    const toneCustomInput = document.getElementById("toneCustom");
+    const energyInput = document.getElementById("energy");
+    const energyValue = document.getElementById("energyValue");
+    const barsSelect = document.getElementById("bars");
+    const audienceSelect = document.getElementById("audience");
+    const constraintsInput = document.getElementById("constraints");
+    const aiModeInput = document.getElementById("aiMode");
+    const memoryModeInput = document.getElementById("memoryMode");
+    const rhythmModeInput = document.getElementById("rhythmMode");
+    const providerModeInput = document.getElementById("providerMode");
+    const apiEndpointInput = document.getElementById("apiEndpoint");
+    const apiModelInput = document.getElementById("apiModel");
+    const apiKeyInput = document.getElementById("apiKey");
+    const apiStatus = document.getElementById("apiStatus");
+    const musicStatus = document.getElementById("musicStatus");
+    const musicModelHint = document.getElementById("musicModelHint");
+    const apiAutoInfoEl = document.getElementById("apiAutoInfo");
+    const musicPromptInput = document.getElementById("musicPrompt");
+    const musicModelInput = document.getElementById("musicModel");
+    const musicFormatInput = document.getElementById("musicFormat");
+    const voicePresetInput = document.getElementById("voicePreset");
+    const voiceCustomInput = document.getElementById("voiceCustom");
+    const voiceCatalogStatusEl = document.getElementById("voiceCatalogStatus");
+    const refreshVoiceBtn = document.getElementById("refreshVoiceBtn");
+    const historyVoiceFilterInput = document.getElementById("historyVoiceFilter");
+    const voiceGroupButtons = Array.from(document.querySelectorAll("[data-voice-group]"));
+    const audioPlayer = document.getElementById("audioPlayer");
+    const singBtn = document.getElementById("singBtn");
+    const downloadAudioBtn = document.getElementById("downloadAudioBtn");
+    const singMeta = document.getElementById("singMeta");
+    const singHint = document.getElementById("singHint");
+    const conversationEl = document.getElementById("conversation");
+    const questionBankEl = document.getElementById("questionBank");
+    const followUpMeta = document.getElementById("followUpMeta");
+    const resultSummary = document.getElementById("resultSummary");
+    const resultMeta = document.getElementById("resultMeta");
+    const historyCountEl = document.getElementById("historyCount");
+    const historyListEl = document.getElementById("historyList");
+    const generationStatusTextEl = document.getElementById("generationStatusText");
+    const generationStatusMetaEl = document.getElementById("generationStatusMeta");
+    const generationTrackFillEl = document.getElementById("generationTrackFill");
+    const generationStageLabelEl = document.getElementById("generationStageLabel");
+    const generationStageHintEl = document.getElementById("generationStageHint");
+    const generationStepEls = Array.from(document.querySelectorAll(".generation-step"));
+    const installAppBtn = document.getElementById("installAppBtn");
+    const settingsToggleBtn = document.getElementById("settingsToggle");
+    const settingsShellEl = document.getElementById("settingsShell");
+    const settingsTabAiBtn = document.getElementById("settingsTabAi");
+    const settingsTabHistoryBtn = document.getElementById("settingsTabHistory");
+    const settingsPaneAiEl = document.getElementById("settingsPaneAi");
+    const settingsPaneHistoryEl = document.getElementById("settingsPaneHistory");
+    const settingsBackdropEl = document.querySelector("[data-close-settings]");
+    const jumpArchiveBtn = document.getElementById("jumpArchiveBtn");
+    const archiveSuiteSectionEl = document.getElementById("mainArchiveSection");
+    const singStatePanelEl = document.getElementById("singStatePanel");
+    const singStateTitleEl = document.getElementById("singStateTitle");
+    const singStateDetailEl = document.getElementById("singStateDetail");
+    const singStateMetaEl = document.getElementById("singStateMeta");
+    const singStateFillEl = document.getElementById("singStateFill");
+    const musicSubtitlesEl = document.getElementById("musicSubtitles");
+    const musicSubtitlesNowEl = document.getElementById("musicSubtitlesNow");
+    const musicSubtitlesTrackEl = document.getElementById("musicSubtitlesTrack");
+    const musicSubtitlesMetaEl = document.getElementById("musicSubtitlesMeta");
+    const followUpCustomInput = document.getElementById("followUpCustom");
+    const followUpApplyBtn = document.getElementById("followUpApplyBtn");
+
+    let activeStyle = "燃";
+    let lastState = null;
+    let conversation = [];
+    let generationHistory = [];
+    let expandedHistoryIds = new Set();
+    let isGenerating = false;
+    let liveTimer = null;
+    let lastAudioObjectUrl = "";
+    let activeSettingsTab = "ai";
+    let voiceGroupFilter = "all";
+    let historyVoiceFilter = "all";
+    let singPanelMode = "idle";
+    let currentMusicCues = [];
+    let activeMusicCueIndex = -1;
+    let activePlaybackRecordId = "";
+    let activePlaybackState = "idle";
+    let deferredInstallPrompt = null;
+    let settings = {
+      aiMode: true,
+      memoryMode: true,
+      rhythmMode: true,
+      providerMode: "minimax-full",
+      stylePreset: "燃",
+      styleCustom: "",
+      toneCustom: "",
+      apiEndpoint: "https://api.openai.com/v1/chat/completions",
+      apiModel: "gpt-4o-mini",
+      apiKey: "sk-cp-_aI9xMgM6hmP3pmgUW9iCfR3x2BcNsTRvHrdOaNmFio5dVfAmpTJQmQiFdcDM88GmzHKDQEZBl5mHDw_WsOg8zQRZEdxwr9U_Ru9DFoW2zSOWx92mFHJlbU",
+      musicModel: "music-2.6",
+      musicFormat: "url",
+      musicPrompt: "",
+      voicePreset: "female-chengshu",
+      voiceCustom: "",
+    };
+
+    const storageKey = "word-rap-agent-settings-v1";
+    const generationHistoryKey = "word-rap-agent-generation-history-v1";
+    const historyDbName = "word-rap-agent-history-db-v1";
+    const historyDbStore = "audio";
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        settings = { ...settings, ...data };
+        if (settings.musicModel === "music-2.6-free") settings.musicModel = "music-2.6";
+        if (!settings.apiKey) settings.apiKey = "sk-cp-_aI9xMgM6hmP3pmgUW9iCfR3x2BcNsTRvHrdOaNmFio5dVfAmpTJQmQiFdcDM88GmzHKDQEZBl5mHDw_WsOg8zQRZEdxwr9U_Ru9DFoW2zSOWx92mFHJlbU";
+        if (settings.providerMode === "local") settings.providerMode = "minimax-full";
+        settings.aiMode = true;
+      } catch (_) {}
+    }
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(settings));
+      } catch (_) {}
+    }
+
+    function escapeHTML(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function formatHistoryTime(ts) {
+      try {
+        return new Intl.DateTimeFormat("zh-CN", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(new Date(ts));
+      } catch (_) {
+        return new Date(ts).toLocaleString();
+      }
+    }
+
+    function loadGenerationHistory() {
+      try {
+        const raw = localStorage.getItem(generationHistoryKey);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (Array.isArray(data)) generationHistory = data;
+      } catch (_) {}
+    }
+
+    function inferApiConfig(apiKey, providerMode) {
+      const key = String(apiKey || "").trim();
+      const provider = String(providerMode || "").toLowerCase();
+      const isMiniMax = /^sk-cp-/i.test(key) || /minimax/i.test(key) || provider.includes("minimax");
+      if (!key) {
+        return {
+          endpoint: "https://api.openai.com/v1/chat/completions",
+          model: "gpt-4o-mini",
+          label: "等待输入密钥",
+          providerLabel: "OpenAI 兼容",
+        };
+      }
+      if (isMiniMax) {
+        return {
+          endpoint: "https://api.minimaxi.com/v1/text/chatcompletion_v2",
+          model: "MiniMax-M2.7",
+          label: "已自动识别为 MiniMax · MiniMax-M2.7",
+          providerLabel: "MiniMax",
+        };
+      }
+      return {
+        endpoint: "https://api.openai.com/v1/chat/completions",
+        model: "gpt-4o-mini",
+        label: "已自动识别为 OpenAI 兼容 · gpt-4o-mini",
+        providerLabel: "OpenAI 兼容",
+      };
+    }
+
+    function applyAutoApiConfig() {
+      const config = inferApiConfig(apiKeyInput?.value, providerModeInput?.value);
+      if (apiEndpointInput) apiEndpointInput.value = config.endpoint;
+      if (apiModelInput) apiModelInput.value = config.model;
+      if (apiAutoInfoEl) apiAutoInfoEl.textContent = config.label;
+      return config;
+    }
+
+    function normalizeVoiceText(text) {
+      return String(text || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "");
+    }
+
+    function findVoicePresetByText(text) {
+      const query = normalizeVoiceText(text);
+      if (!query) return null;
+      return voicePresets.find(item => {
+        const labels = [item.label, item.value, ...item.aliases];
+        return labels.some(label => normalizeVoiceText(label).includes(query) || query.includes(normalizeVoiceText(label)));
+      }) || null;
+    }
+
+    function getVoiceGroupLabel(group) {
+      return ({
+        all: "全部",
+        male: "男声",
+        female: "女声",
+        child: "童声",
+        elder: "老年声",
+        custom: "自定义",
+      })[group] || "全部";
+    }
+
+    function getSelectedVoiceGroup() {
+      const preset = getSelectedVoicePreset();
+      return preset?.group || "custom";
+    }
+
+    function setVoiceGroupFilter(group, { quiet = false } = {}) {
+      voiceGroupFilter = ["all", "male", "female", "child", "elder"].includes(group) ? group : "all";
+      renderVoiceGroupButtons();
+      renderVoiceSelect();
+      if (!quiet) updateVoiceStatus();
+    }
+
+    function renderVoiceGroupButtons() {
+      voiceGroupButtons.forEach(button => {
+        button.classList.toggle("active", button.getAttribute("data-voice-group") === voiceGroupFilter);
+      });
+    }
+
+    function getSelectedVoicePreset() {
+      const custom = voiceCustomInput?.value.trim();
+      if (custom) {
+        const matched = findVoicePresetByText(custom);
+        if (matched) return matched;
+        return { value: "custom", label: custom, aliases: [] };
+      }
+      if (voicePresetInput?.value === "custom") {
+        return { value: "custom", label: "按输入的人名", aliases: [] };
+      }
+      return voicePresets.find(item => item.value === voicePresetInput?.value) || voicePresets[0];
+    }
+
+    function getSelectedVoiceLabel() {
+      return getSelectedVoicePreset()?.label || "默认人声";
+    }
+
+    function getSelectedVoiceId() {
+      const preset = getSelectedVoicePreset();
+      return preset?.value || "default";
+    }
+
+    function getSelectedVoiceDisplayLabel() {
+      const preset = getSelectedVoicePreset();
+      const group = getSelectedVoiceGroup();
+      return `${getVoiceGroupLabel(group)} · ${preset?.label || "默认人声"}`;
+    }
+
+    function saveGenerationHistory() {
+      try {
+        localStorage.setItem(generationHistoryKey, JSON.stringify(generationHistory.slice(0, 20)));
+      } catch (_) {}
+    }
+
+    function openHistoryDb() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(historyDbName, 1);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains(historyDbStore)) {
+            db.createObjectStore(historyDbStore);
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function saveHistoryAudio(id, blob) {
+      const db = await openHistoryDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(historyDbStore, "readwrite");
+        tx.objectStore(historyDbStore).put(blob, id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      db.close();
+    }
+
+    async function loadHistoryAudio(id) {
+      const db = await openHistoryDb();
+      const blob = await new Promise((resolve, reject) => {
+        const tx = db.transaction(historyDbStore, "readonly");
+        const req = tx.objectStore(historyDbStore).get(id);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+      db.close();
+      return blob;
+    }
+
+    async function deleteHistoryAudio(id) {
+      const db = await openHistoryDb();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(historyDbStore, "readwrite");
+        tx.objectStore(historyDbStore).delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+      db.close();
+    }
+
+    function syncSettingsToUI() {
+      aiModeInput.checked = settings.aiMode;
+      memoryModeInput.checked = settings.memoryMode;
+      rhythmModeInput.checked = settings.rhythmMode;
+      providerModeInput.value = settings.providerMode;
+      stylePresetInput.value = settings.stylePreset || "燃";
+      styleCustomInput.value = settings.styleCustom || "";
+      toneCustomInput.value = settings.toneCustom || "";
+      voiceCustomInput.value = settings.voiceCustom || "";
+      renderVoiceSelect();
+      apiKeyInput.value = settings.apiKey;
+      applyAutoApiConfig();
+      musicModelInput.value = settings.musicModel;
+      musicFormatInput.value = settings.musicFormat;
+      musicPromptInput.value = settings.musicPrompt;
+      voicePresetInput.value = settings.voicePreset || "female-chengshu";
+      voiceGroupFilter = ["all", "male", "female", "child", "elder"].includes(settings.voiceGroupFilter) ? settings.voiceGroupFilter : "all";
+      historyVoiceFilter = settings.historyVoiceFilter || "all";
+      renderVoiceGroupButtons();
+      activeStyle = getSelectedStyle();
+      updateApiStatus();
+      updateMusicStatus();
+      updateVoiceStatus();
+      renderHistoryVoiceFilter();
+    }
+
+    function readSettingsFromUI() {
+      settings.aiMode = aiModeInput.checked;
+      settings.memoryMode = memoryModeInput.checked;
+      settings.rhythmMode = rhythmModeInput.checked;
+      settings.providerMode = providerModeInput.value;
+      settings.stylePreset = stylePresetInput.value;
+      settings.styleCustom = styleCustomInput.value.trim();
+      settings.toneCustom = toneCustomInput.value.trim();
+      settings.apiKey = apiKeyInput.value.trim();
+      const apiConfig = applyAutoApiConfig();
+      settings.apiEndpoint = apiConfig.endpoint;
+      settings.apiModel = apiConfig.model;
+      settings.musicModel = musicModelInput.value;
+      if (settings.musicModel === "music-2.6-free") settings.musicModel = "music-2.6";
+      settings.musicFormat = musicFormatInput.value;
+      settings.musicPrompt = musicPromptInput.value.trim();
+      settings.voicePreset = voicePresetInput.value;
+      settings.voiceCustom = voiceCustomInput.value.trim();
+      settings.voiceGroupFilter = voiceGroupFilter;
+      settings.historyVoiceFilter = historyVoiceFilter;
+      activeStyle = getSelectedStyle();
+      saveSettings();
+      updateApiStatus();
+      updateMusicStatus();
+      updateVoiceStatus();
+    }
+
+    function getSelectedStyle() {
+      return styleCustomInput?.value.trim() || stylePresetInput?.value || "燃";
+    }
+
+    function getSelectedTone() {
+      return toneCustomInput?.value.trim() || toneSelect?.value || "热血上头";
+    }
+
+    function updateApiStatus() {
+      const config = inferApiConfig(settings.apiKey, settings.providerMode);
+      const ready = settings.aiMode && settings.apiKey;
+      apiStatus.textContent = ready ? `${config.providerLabel} 已识别` : settings.aiMode ? "缺少 API 密钥" : "本地模式";
+      apiStatus.style.color = ready ? "var(--good)" : settings.aiMode ? "var(--accent)" : "var(--muted-2)";
+      if (apiAutoInfoEl) {
+        apiAutoInfoEl.textContent = settings.apiKey ? config.label : "等待输入密钥";
+      }
+    }
+
+    function updateMusicStatus(text = "") {
+      const ready = settings.providerMode !== "local" && settings.apiKey;
+      musicStatus.textContent = text || (ready ? "MiniMax 已准备" : "本地模式");
+      musicStatus.style.color = ready ? "var(--good)" : "var(--muted-2)";
+      if (musicModelHint) {
+        const model = settings.musicModel || "music-2.6";
+        if (model === "music-2.6") {
+          musicModelHint.textContent = "当前仅保留 music-2.6";
+          musicModelHint.style.color = "var(--muted-2)";
+        } else {
+          musicModelHint.textContent = `当前模型：${model}，建议切回 music-2.6`;
+          musicModelHint.style.color = "var(--accent)";
+        }
+      }
+      const fileModeWarn = location.protocol === "file:" && settings.providerMode !== "local"
+        ? "当前页面是 file://，建议切到 http://127.0.0.1:4180/index.html 再试。"
+        : "";
+      singHint.textContent = settings.providerMode === "local"
+        ? "当前是本地模式，只生成歌词，不调用 MiniMax 音乐接口。"
+        : fileModeWarn || "会先生成歌词，再交给 MiniMax 音乐接口生成带人声的歌曲。";
+      if (localBanner) {
+        localBanner.style.display = location.protocol === "file:" && settings.providerMode !== "local" ? "block" : "none";
+      }
+    }
+
+    function getMusicVoiceDirective(state) {
+      const group = state.voiceGroup || getSelectedVoiceGroup();
+      const mapping = {
+        child: "清亮童声，咬字清晰，主唱必须有人声，不能只有伴奏",
+        elder: "温暖成熟人声，咬字清晰，主唱必须有人声，不能只有伴奏",
+        male: "成熟男声，主唱清晰，不能只有伴奏",
+        female: "清亮女声，主唱清晰，不能只有伴奏",
+        custom: "人声主唱清晰，不能只有伴奏",
+      };
+      const presetLabel = getVoicePromptLabel(state);
+      return `${mapping[group] || mapping.custom}，人设参考：${presetLabel}`;
+    }
+
+    function updateVoiceStatus(text = "") {
+      if (!voiceCatalogStatusEl) return;
+      const preset = getSelectedVoicePreset();
+      const label = getSelectedVoiceDisplayLabel();
+      const id = getSelectedVoiceId();
+      voiceCatalogStatusEl.textContent = text || `${label} · ${id}`;
+    }
+
+    function updateSingState({ mode = "idle", percent = 0, title = "等待生成", detail = "会先生成歌词，再交给 MiniMax 音乐接口生成带人声的歌曲。", meta = "待命" } = {}) {
+      singPanelMode = mode;
+      if (singStatePanelEl) singStatePanelEl.classList.toggle("active", mode !== "idle");
+      if (singBtn) singBtn.hidden = mode === "loading";
+      if (singStateTitleEl) singStateTitleEl.textContent = title;
+      if (singStateDetailEl) singStateDetailEl.textContent = detail;
+      if (singStateMetaEl) singStateMetaEl.textContent = meta;
+      if (singStateFillEl) singStateFillEl.style.width = `${Math.max(0, Math.min(100, Math.round(percent)))}%`;
+    }
+
+    function normalizeSubtitleLines(value) {
+      return splitLines(Array.isArray(value) ? value.join("\n") : value);
+    }
+
+    function buildSubtitleSectionsFromState(state) {
+      const sections = state?.sections || {};
+      return [
+        { key: "intro", label: "Intro", lines: normalizeSubtitleLines(sections.intro) },
+        { key: "verse1", label: "Verse 1", lines: normalizeSubtitleLines(sections.verse1) },
+        { key: "hook", label: "Hook", lines: normalizeSubtitleLines(sections.hook) },
+        { key: "verse2", label: "Verse 2", lines: normalizeSubtitleLines(sections.verse2) },
+        { key: "outro", label: "Outro", lines: normalizeSubtitleLines(sections.outroLine) },
+      ].filter(section => section.lines.length);
+    }
+
+    function buildSubtitleSectionsFromLyricsText(rawLyrics) {
+      const text = String(rawLyrics || "").replace(/\r\n/g, "\n").trim();
+      if (!text) return [];
+      const lines = text.split("\n").map(line => line.trim()).filter(Boolean);
+      const sectionLabels = [
+        ["intro", /^(?:intro|intro\s*[:：])$/i],
+        ["verse1", /^(?:verse\s*1|verse\s*1\s*[:：]|verse\s*[:：])$/i],
+        ["hook", /^(?:hook|chorus|pre-chorus|pre chorus|hook\s*[:：])$/i],
+        ["verse2", /^(?:verse\s*2|verse\s*2\s*[:：])$/i],
+        ["outroLine", /^(?:outro|ending|outro\s*[:：])$/i],
+      ];
+      const buckets = { intro: [], verse1: [], hook: [], verse2: [], outroLine: [] };
+      let current = "";
+      let hasStructuredHeaders = false;
+      for (const line of lines) {
+        const normalized = line.replace(/^#+\s*/, "").trim();
+        if (!normalized) continue;
+        const hit = sectionLabels.find(([, pattern]) => pattern.test(normalized));
+        if (hit) {
+          current = hit[0];
+          hasStructuredHeaders = true;
+          continue;
+        }
+        if (/^(?:歌名|关键词|风格|情绪|人设|篇幅|炸点强度|受众|约束|主题扩展|节奏提示)\s*[:：]/i.test(normalized)) {
+          continue;
+        }
+        if (!current) continue;
+        buckets[current].push(normalized);
+      }
+      if (!hasStructuredHeaders) {
+        const parsed = parseLyricsSections(text, {});
+        if (!parsed) return [];
+        return buildSubtitleSectionsFromState({
+          sections: {
+            intro: parsed.intro,
+            verse1: parsed.verse1,
+            hook: parsed.hook,
+            verse2: parsed.verse2,
+            outroLine: parsed.outroLine,
+          }
+        });
+      }
+      const sectionState = {
+        intro: buckets.intro.join("\n"),
+        verse1: buckets.verse1.join("\n"),
+        hook: buckets.hook.join("\n"),
+        verse2: buckets.verse2.join("\n"),
+        outroLine: buckets.outroLine.join("\n"),
+      };
+      return buildSubtitleSectionsFromState({ sections: sectionState });
+    }
+
+    function assignSubtitleCueTimes(duration) {
+      currentMusicCues = [];
+    }
+
+    function formatSubtitleTime(seconds) {
+      const total = Math.max(0, Number(seconds) || 0);
+      const whole = Math.floor(total);
+      const minutes = Math.floor(whole / 60);
+      const secs = String(whole % 60).padStart(2, "0");
+      return `${minutes}:${secs}`;
+    }
+
+    function refreshSubtitleTimeLabels() {
+      return;
+    }
+
+    function syncMusicSubtitleTimeline() {
+      return;
+    }
+
+    function renderMusicSubtitlesFromSections(sections, sourceLabel = "") {
+      currentMusicCues = [];
+      activeMusicCueIndex = -1;
+      if (musicSubtitlesEl) musicSubtitlesEl.classList.remove("active");
+      if (musicSubtitlesTrackEl) musicSubtitlesTrackEl.innerHTML = "";
+      if (musicSubtitlesMetaEl) musicSubtitlesMetaEl.textContent = "";
+      if (musicSubtitlesNowEl) musicSubtitlesNowEl.textContent = "";
+    }
+
+    function setActiveMusicSubtitle(index) {
+      activeMusicCueIndex = index;
+    }
+
+    function buildSubtitleSectionsFromRecord(record) {
+      if (!record) return [];
+      const stored = record.sectionsSnapshot;
+      if (stored && typeof stored === "object") {
+        return buildSubtitleSectionsFromState({
+          sections: {
+            intro: stored.intro || "",
+            verse1: stored.verse1 || "",
+            hook: stored.hook || "",
+            verse2: stored.verse2 || "",
+            outroLine: stored.outroLine || "",
+          }
+        });
+      }
+      return buildSubtitleSectionsFromLyricsText(record.lyricsText || "");
+    }
+
+    function updateMusicSubtitleByTime(currentTime) {
+      return;
+    }
+
+    function isTypingTarget(target) {
+      if (!target) return false;
+      const tag = target.tagName ? target.tagName.toUpperCase() : "";
+      return Boolean(
+        target.isContentEditable ||
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        tag === "BUTTON" ||
+        tag === "A"
+      );
+    }
+
+    function stopAudioPlayback(message = "已停止播放") {
+      try {
+        audioPlayer.pause();
+      } catch (_) {}
+      activePlaybackState = "paused";
+      activeMusicCueIndex = -1;
+      if (singMeta) singMeta.textContent = message;
+      renderHistory();
+    }
+
+    let uiClickAudioContext = null;
+
+    function playUiClickSound() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      try {
+        if (!uiClickAudioContext) uiClickAudioContext = new AudioCtx();
+        if (uiClickAudioContext.state === "suspended") {
+          uiClickAudioContext.resume().catch(() => {});
+        }
+        const now = uiClickAudioContext.currentTime;
+        const oscillator = uiClickAudioContext.createOscillator();
+        const gain = uiClickAudioContext.createGain();
+        oscillator.type = "triangle";
+        oscillator.frequency.setValueAtTime(520, now);
+        oscillator.frequency.exponentialRampToValueAtTime(180, now + 0.08);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+        oscillator.connect(gain);
+        gain.connect(uiClickAudioContext.destination);
+        oscillator.start(now);
+        oscillator.stop(now + 0.14);
+      } catch (_) {}
+    }
+
+    function flashControlFeedback(node) {
+      if (!node || node.classList.contains("click-flash")) return;
+      node.classList.add("click-flash");
+      window.setTimeout(() => node.classList.remove("click-flash"), 240);
+    }
+
+    function updateInstallButton() {
+      if (!installAppBtn) return;
+      const standalone = window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone;
+      installAppBtn.hidden = standalone || !deferredInstallPrompt;
+    }
+
+    function openSettings(tab = "ai") {
+      activeSettingsTab = tab;
+      settingsShellEl.classList.add("open");
+      settingsShellEl.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      setSettingsTab(tab);
+    }
+
+    function closeSettings() {
+      settingsShellEl.classList.remove("open");
+      settingsShellEl.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    function setSettingsTab(tab) {
+      activeSettingsTab = tab === "history" ? "history" : "ai";
+      settingsTabAiBtn?.classList.toggle("active", activeSettingsTab === "ai");
+      settingsTabHistoryBtn?.classList.toggle("active", activeSettingsTab === "history");
+      settingsPaneAiEl?.classList.toggle("active", activeSettingsTab === "ai");
+      settingsPaneHistoryEl?.classList.toggle("active", activeSettingsTab === "history");
+    }
+
+    function summarizeInput(text) {
+      const value = String(text || "").replace(/\s+/g, " ").trim();
+      if (!value) return "灵感";
+      return value.length > 16 ? `${value.slice(0, 16)}…` : value;
+    }
+
+    function updateGenerationBoard({ percent = 0, stage = "待命", detail = "", step = -1, done = false } = {}) {
+      if (generationStatusMetaEl) generationStatusMetaEl.textContent = `${Math.max(0, Math.min(100, Math.round(percent)))}%`;
+      if (generationStatusTextEl) generationStatusTextEl.textContent = detail || stage || "等待开始。";
+      if (generationTrackFillEl) generationTrackFillEl.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+      if (generationStageLabelEl) generationStageLabelEl.textContent = stage || "待命";
+      if (generationStageHintEl) generationStageHintEl.textContent = done ? "已完成" : settings.providerMode === "local" ? "本地模式" : "外部模型";
+      generationStepEls.forEach((node, index) => {
+        node.classList.toggle("active", index === step && !done);
+        node.classList.toggle("done", done ? index <= Math.max(step, 0) : index < step);
+      });
+    }
+
+    function setLoading(loading, label = "") {
+      isGenerating = loading;
+      const btns = ["generateBtn", "regenBtn", "randomBtn", "copyBtn", "copyPromptBtn", "downloadBtn"];
+      btns.forEach(id => {
+        const node = document.getElementById(id);
+        if (node) node.disabled = loading;
+      });
+      document.getElementById("generateBtn").textContent = loading ? (label || "生成中...") : "生成歌词";
+      document.getElementById("regenBtn").textContent = loading ? "处理中..." : "再来一版";
+      if (!loading) {
+        updateGenerationBoard({ percent: 100, stage: "完成", detail: "这一轮已经生成完成，可以查看、播放或保存到历史里。", step: 3, done: true });
+      }
+    }
+
+    function triggerDownload(filename, blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 10000);
+    }
+
+    async function downloadBlobFromUrl(url) {
+      const source = String(url || "");
+      const fetchUrl = /^https?:\/\//i.test(source)
+        ? `${MINIMAX_PROXY_BASE}/api/fetch-file?url=${encodeURIComponent(source)}`
+        : source;
+      const response = await fetch(fetchUrl);
+      if (!response.ok) throw new Error("下载失败");
+      return response.blob();
+    }
+
+    async function fetchAudioBlob(sourceUrl) {
+      if (!sourceUrl) return null;
+      try {
+        return await downloadBlobFromUrl(sourceUrl);
+      } catch (error) {
+        console.warn("fetch audio blob failed", error);
+        return null;
+      }
+    }
+
+    function scheduleLiveGenerate(salt = "live-update") {
+      clearTimeout(liveTimer);
+      liveTimer = setTimeout(() => {
+        if (lastState && !settings.aiMode) generate(salt);
+      }, 420);
+    }
+
+    function seedFrom(parts) {
+      const text = parts.join("|");
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+
+    function mulberry32(seed) {
+      return function() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function pick(rng, list) {
+      return list[Math.floor(rng() * list.length)];
+    }
+
+    function makeUniqueLine(template, replacements) {
+      let line = template;
+      Object.entries(replacements).forEach(([key, value]) => {
+        line = line.replaceAll(`{${key}}`, value);
+      });
+      return line;
+    }
+
+    function detectTheme(word) {
+      const map = [
+        { keys: ["失恋", "分别", "孤独", "深夜", "眼泪", "雨"], theme: "夜色、距离、回忆" },
+        { keys: ["夏", "太阳", "海", "风", "阳光"], theme: "热浪、清爽、自由" },
+        { keys: ["兄弟", "朋友", "聚会", "酒", "局"], theme: "兄弟情、现场感、义气" },
+        { keys: ["钱", "暴富", "工资", "发财", "副业"], theme: "野心、翻盘、现实压力" },
+        { keys: ["未来", "科技", "AI", "赛博", "机甲"], theme: "科技、速度、城市霓虹" }
+      ];
+      const hit = map.find(item => item.keys.some(k => word.includes(k)));
+      return hit ? hit.theme : "把一个简单词扩展成有画面、有情绪、有冲突的故事";
+    }
+
+    function detectRhymeFamily(word, style) {
+      const candidate = (word + style).toLowerCase();
+      if (/[刚光航ang]/.test(candidate)) return "ang";
+      if (/[ing]/.test(candidate)) return "ing";
+      if (/[an]/.test(candidate)) return "an";
+      if (/[ao]/.test(candidate)) return "ao";
+      if (/[ei]/.test(candidate)) return "ei";
+      return "u";
+    }
+
+    function splitLines(text) {
+      return String(text || "")
+        .replace(/\r\n/g, "\n")
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean);
+    }
+
+    function formatRapText(text, enabled = true) {
+      if (!enabled) return String(text || "").trim();
+      const lines = splitLines(text);
+      const normalized = lines.flatMap(line => {
+        const fragments = line
+          .replace(/([。！？!?；;])/g, "$1\n")
+          .replace(/[|｜]/g, "\n")
+          .split("\n")
+          .map(part => part.trim())
+          .filter(Boolean);
+        return fragments.length ? fragments : [line];
+      });
+      const withSpaces = normalized.map(line => {
+        if (line.length <= 18) return line;
+        const mid = Math.ceil(line.length / 2);
+        return `${line.slice(0, mid)}\n${line.slice(mid)}`;
+      });
+      return withSpaces.join("\n");
+    }
+
+    function formatSectionLines(value, rhythmEnabled) {
+      if (Array.isArray(value)) {
+        return value.map(item => formatRapText(item, rhythmEnabled));
+      }
+      return formatRapText(value, rhythmEnabled);
+    }
+
+    function localFollowUps(state) {
+      const bank = {
+        燃: ["再狠一点", "更像 live 现场", "加一段反转"],
+        搞笑: ["更抽象一点", "加梗密度", "更像即兴整活"],
+        emo: ["更克制一点", "加夜晚场景", "把副歌写更痛"],
+        "oldschool": ["更复古一点", "加 boom bap 感", "押韵更稳"],
+        trap: ["更重低音", "加未来感", "句子更短更炸"],
+        国风: ["加一点典故", "更像江湖", "画面更东方"],
+        "东北味": ["更口语一点", "加点松弛感", "整活味更重"],
+        未来感: ["更赛博", "更冷一点", "加霓虹城市感"],
+      };
+      const extras = [
+        `把“${state.keyword}”写得更${state.tone}一点`,
+        `把副歌再炸一点`,
+        `加一个结尾反转`,
+      ];
+      const styleBank = bank[state.style] || [];
+      const merged = [...styleBank, ...extras];
+      return merged.slice(0, 5);
+    }
+
+    function renderConversation(state) {
+      conversationEl.innerHTML = "";
+      conversation.forEach(item => {
+        const bubble = document.createElement("div");
+        bubble.className = `bubble ${item.role}`;
+        bubble.textContent = item.content;
+        conversationEl.appendChild(bubble);
+      });
+      if (!conversation.length && state?.assistantBrief) {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble assistant";
+        bubble.textContent = state.assistantBrief;
+        conversationEl.appendChild(bubble);
+      }
+    }
+
+    function renderQuestionBank(questions) {
+      questionBankEl.innerHTML = "";
+      followUpMeta.textContent = questions.length ? "可直接点选追问" : "暂无追问";
+      questions.forEach(question => {
+        const chip = document.createElement("button");
+        chip.className = "question-chip";
+        chip.textContent = question;
+        chip.addEventListener("click", () => {
+          constraintsInput.value = constraintsInput.value.trim()
+            ? `${constraintsInput.value.trim()}；${question}`
+            : question;
+          generate("follow-up");
+        });
+        questionBankEl.appendChild(chip);
+      });
+    }
+
+    function applyCustomFollowUpDirection() {
+      const value = followUpCustomInput?.value.trim();
+      if (!value) {
+        if (followUpCustomInput) followUpCustomInput.focus();
+        return;
+      }
+      constraintsInput.value = constraintsInput.value.trim()
+        ? `${constraintsInput.value.trim()}；${value}`
+        : value;
+      if (followUpCustomInput) followUpCustomInput.value = "";
+      if (lastState) {
+        generate("follow-up");
+      } else {
+        generate("follow-up");
+      }
+    }
+
+    function saveConversation() {
+      try {
+        localStorage.setItem("word-rap-agent-conversation-v1", JSON.stringify(conversation.slice(-12)));
+      } catch (_) {}
+    }
+
+    function loadConversation() {
+      try {
+        const raw = localStorage.getItem("word-rap-agent-conversation-v1");
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (Array.isArray(data)) conversation = data;
+      } catch (_) {}
+    }
+
+    function clearConversationIfNeeded() {
+      if (!settings.memoryMode) {
+        conversation = [];
+        saveConversation();
+      }
+    }
+
+    function buildSystemPrompt() {
+      return `你是一个中文即兴说唱生成器，也是一个会主动追问的 rap 智能体。
+你的目标：根据用户输入的一段内容，生成一首可以直接唱出来的中文说唱。
+
+请严格按 JSON 输出，且只输出 JSON，不要额外解释。
+JSON 结构：
+{
+  "title": "歌名",
+  "theme": "主题扩展",
+  "analysis": "对这个词的理解，一句话",
+  "lyrics": {
+    "intro": ["..."],
+    "verse1": ["..."],
+    "hook": ["..."],
+    "verse2": ["..."],
+    "outro": ["..."]
+  },
+  "rhythm_notes": ["每段的节奏提示，最多 4 条"],
+  "follow_ups": ["给用户的下一轮追问，最多 3 条，短一些"]
+}
+
+规则：
+1. 使用自然中文，适合口播和演唱。
+2. 句子要有节奏感，尽量短句，方便断句。
+3. 保持押韵，但不要牺牲语义。
+4. 不要模仿真实歌手的固定腔调或标志性风格。
+5. 如果已有对话历史，要把用户的追问当成新约束继续收紧。
+6. 如果用户没给足信息，主动在 follow_ups 里给出可点击的追问方向。
+7. 输出必须是合法 JSON。`;
+    }
+
+    function buildConversationMessages(state) {
+      const history = settings.memoryMode ? conversation.map(item => ({
+        role: item.role,
+        content: item.content,
+      })) : [];
+      const baseUser = [
+        `输入内容：${state.keyword}`,
+        `风格：${state.style}`,
+        `情绪：${state.tone}${state.toneCustom ? ` / ${state.toneCustom}` : ""}`,
+        `人声：${getVoicePromptLabel(state)}${state.voiceGroup ? ` / ${getVoiceGroupLabel(state.voiceGroup)}` : ""}${state.voicePreset ? ` / ${state.voicePreset}` : ""}`,
+        `篇幅：${state.bars} 小节`,
+        `炸点强度：${state.energy}/10`,
+        `受众：${state.audience}`,
+        `主题扩展：${state.topic}`,
+        `自动节奏整理：${settings.rhythmMode ? "开启" : "关闭"}`,
+        `附加约束：${state.constraints || "无"}`,
+        history.length ? `历史对话：${history.map(item => `${item.role.toUpperCase()}: ${item.content}`).join("\n")}` : "历史对话：无",
+        `请根据这些信息生成 JSON。`
+      ].join("\n");
+
+      return [
+        { role: "system", content: buildSystemPrompt() },
+        ...history,
+        { role: "user", content: baseUser }
+      ];
+    }
+
+    function buildMiniMaxLyricsPrompt(state) {
+      return `你是一个中文即兴说唱生成器。
+用户可能输入一个词、一首诗、一句话，或一段文稿，你要把它扩展成一首完整 rap 歌词。
+
+输入内容：${state.keyword}
+主题扩展：${state.topic}
+风格：${state.style}
+情绪：${state.tone}${state.toneCustom ? ` / ${state.toneCustom}` : ""}
+人声：${getVoicePromptLabel(state)}${state.voiceGroup ? ` / ${getVoiceGroupLabel(state.voiceGroup)}` : ""}${state.voicePreset ? ` / ${state.voicePreset}` : ""}
+篇幅：${state.bars} 小节
+炸点强度：${state.energy}/10
+受众/语气：${state.audience}
+额外约束：${state.constraints || "无"}
+
+要求：
+1. 只输出歌词正文，不要解释，不要 JSON，不要代码块。
+2. 结构要完整，至少包含 Intro、Verse 1、Hook、Verse 2、Outro。
+3. 语言自然、可唱、短句优先，尽量保留明显的段落标签。
+4. 不要模仿真实歌手的固定腔调。`;
+    }
+
+    function buildMiniMaxLyricsMessages(state) {
+      const history = settings.memoryMode ? conversation.map(item => ({
+        role: item.role,
+        content: item.content,
+      })) : [];
+      return [
+        { role: "system", content: buildSystemPrompt() },
+        ...history,
+        { role: "user", content: buildMiniMaxLyricsPrompt(state) }
+      ];
+    }
+
+    function buildMusicPrompt(state) {
+      const voiceLabel = getVoicePromptLabel(state);
+      const productionHint = [
+        "成品感优先",
+        "主旋律要抓耳",
+        "副歌要有记忆点",
+        "鼓点要稳，低音要厚",
+        "人声要清晰、靠前、不要只有伴奏",
+        "整体听感要像专业发行作品",
+        "Hook 要尽量朗朗上口，便于跟唱",
+      ].join("，");
+      const fallback = `${state.style}, ${state.tone}${state.toneCustom ? `, ${state.toneCustom}` : ""}, ${state.audience}, ${voiceLabel}${state.voiceGroup ? `, ${getVoiceGroupLabel(state.voiceGroup)}` : ""}, 中文说唱, 人声演唱, 808, 适合短视频传播, ${productionHint}, ${getMusicVoiceDirective(state)}`;
+      return settings.musicPrompt
+        ? `${settings.musicPrompt}, ${productionHint}, ${getMusicVoiceDirective(state)}`
+        : fallback;
+    }
+
+    function getVoicePromptLabel(state) {
+      const preset = voicePresets.find(item => item.value === (state.voicePreset || settings.voicePreset)) || voicePresets[0];
+      const custom = String(state.voiceCustom || settings.voiceCustom || "").trim();
+      return custom || preset.label;
+    }
+
+    function lyricsToMusicTagText(state) {
+      const flatten = (value) => Array.isArray(value) ? value.join("\n") : String(value || "");
+      return [
+        `[Intro]`,
+        flatten(state.sections.intro),
+        ``,
+        `[Verse 1]`,
+        flatten(state.sections.verse1),
+        ``,
+        `[Hook]`,
+        flatten(state.sections.hook),
+        ``,
+        `[Verse 2]`,
+        flatten(state.sections.verse2),
+        ``,
+        `[Outro]`,
+        flatten(state.sections.outroLine)
+      ].join("\n");
+    }
+
+    function safeParseJSON(text) {
+      const cleaned = String(text || "").trim();
+      const match = cleaned.match(/\{[\s\S]*\}$/);
+      const candidate = match ? match[0] : cleaned;
+      try {
+        return JSON.parse(candidate);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function normalizeAIResponse(payload, state) {
+      const rawText = typeof payload === "string" ? payload : JSON.stringify(payload || "");
+      const cleanedText = rawText
+        .replace(/<think>[\s\S]*?<\/think>/gi, "")
+        .replace(/```json\s*/gi, "")
+        .replace(/```/g, "")
+        .trim();
+      const data = typeof payload === "string" ? safeParseJSON(cleanedText) : payload;
+      if (!data) return null;
+      const lyrics = data.lyrics || {};
+      const intro = Array.isArray(lyrics.intro) ? lyrics.intro : splitLines(lyrics.intro || "");
+      const verse1 = Array.isArray(lyrics.verse1) ? lyrics.verse1 : splitLines(lyrics.verse1 || "");
+      const hook = Array.isArray(lyrics.hook) ? lyrics.hook.join("\n") : String(lyrics.hook || "");
+      const verse2 = Array.isArray(lyrics.verse2) ? lyrics.verse2 : splitLines(lyrics.verse2 || "");
+      const outro = Array.isArray(lyrics.outro) ? lyrics.outro.join("\n") : String(lyrics.outro || "");
+      const followUps = Array.isArray(data.follow_ups) ? data.follow_ups.filter(Boolean).slice(0, 3) : [];
+      return {
+        keyword: state.keyword,
+        style: state.style,
+        tone: state.tone,
+        toneCustom: state.toneCustom || "",
+        voiceGroup: state.voiceGroup || "",
+        voicePreset: state.voicePreset || "",
+        voiceCustom: state.voiceCustom || "",
+        bars: state.bars,
+        energy: state.energy,
+        audience: state.audience,
+        constraints: state.constraints,
+        topic: data.theme || state.topic,
+        rhymeFamily: state.rhymeFamily,
+        source: "ai",
+        assistantBrief: data.analysis || "",
+        title: data.title || `${summarizeInput(state.keyword)} · 即兴说唱`,
+        sections: {
+          intro: formatSectionLines(intro, settings.rhythmMode).join("\n"),
+          verse1: formatSectionLines(verse1, settings.rhythmMode),
+          hook: formatRapText(hook, settings.rhythmMode),
+          verse2: formatSectionLines(verse2, settings.rhythmMode),
+          outroLine: formatRapText(outro, settings.rhythmMode),
+        },
+        rhythmNotes: Array.isArray(data.rhythm_notes) ? data.rhythm_notes.slice(0, 4) : [],
+        followUps,
+      };
+    }
+
+    function parseLyricsSections(rawLyrics, state) {
+      const text = String(rawLyrics || "").replace(/\r\n/g, "\n").trim();
+      if (!text) return null;
+      const labels = [
+        ["intro", /^(?:\[(?:intro|verse\s*0?)\])$/i],
+        ["verse1", /^\[(?:verse\s*1|verse)\]$/i],
+        ["hook", /^\[(?:hook|chorus|pre-chorus|pre chorus)\]$/i],
+        ["verse2", /^\[(?:verse\s*2)\]$/i],
+        ["outroLine", /^\[(?:outro|ending)\]$/i],
+      ];
+      const lines = text.split("\n");
+      const buckets = { intro: [], verse1: [], hook: [], verse2: [], outroLine: [] };
+      let current = "intro";
+      const hasTags = lines.some(line => /^\s*\[[^\]]+\]\s*$/.test(line));
+      if (!hasTags) {
+        return {
+          intro: formatRapText(text, settings.rhythmMode),
+          verse1: [formatRapText(text, settings.rhythmMode)],
+          hook: formatRapText(text, settings.rhythmMode),
+          verse2: [formatRapText(text, settings.rhythmMode)],
+          outroLine: formatRapText(text, settings.rhythmMode),
+        };
+      }
+      for (const line of lines) {
+        const trimmed = line.trim();
+        const hit = labels.find(([, pattern]) => pattern.test(trimmed));
+        if (hit) {
+          current = hit[0];
+          continue;
+        }
+        if (!trimmed) continue;
+        buckets[current].push(trimmed);
+      }
+      return {
+        intro: formatRapText(buckets.intro.join("\n"), settings.rhythmMode),
+        verse1: buckets.verse1.length ? buckets.verse1 : splitLines(text),
+        hook: formatRapText(buckets.hook.join("\n"), settings.rhythmMode),
+        verse2: buckets.verse2.length ? buckets.verse2 : splitLines(text),
+        outroLine: formatRapText(buckets.outroLine.join("\n"), settings.rhythmMode),
+      };
+    }
+
+    function normalizeMiniMaxLyricsResponse(payload, state) {
+      const data = payload?.data || payload || {};
+      const title = data.song_title || data.title || `${summarizeInput(state.keyword)} · 即兴说唱`;
+      const lyrics = String(data.lyrics || data.text || data.content || "").trim();
+      const styleTags = String(data.style_tags || data.styleTags || "").trim();
+      const sections = parseLyricsSections(lyrics, state);
+      if (!sections) return null;
+      return {
+        keyword: state.keyword,
+        style: state.style,
+        tone: state.tone,
+        toneCustom: state.toneCustom || "",
+        voiceGroup: state.voiceGroup || "",
+        voicePreset: state.voicePreset || "",
+        voiceCustom: state.voiceCustom || "",
+        bars: state.bars,
+        energy: state.energy,
+        audience: state.audience,
+        constraints: state.constraints,
+        topic: data.theme || state.topic,
+        rhymeFamily: state.rhymeFamily,
+        source: "minimax-lyrics",
+        assistantBrief: styleTags ? `MiniMax 生成了歌词，风格标签：${styleTags}` : "MiniMax 生成了歌词。",
+        title,
+        sections,
+        rhythmNotes: Array.isArray(data.rhythm_notes) ? data.rhythm_notes.slice(0, 4) : [
+          "MiniMax 已生成完整歌词，再交给音乐接口处理。",
+          "如果断句过长，页面会自动再整理一遍。"
+        ],
+        followUps: Array.isArray(data.follow_ups) ? data.follow_ups.filter(Boolean).slice(0, 3) : localFollowUps(state),
+      };
+    }
+
+    function lineSet(topic, word, style, tone, energy, audience, rhymeWord, rng) {
+      const openers = [
+        `把“{word}”放进麦克风，我就能点亮整条街`,
+        `一开口就把{topic}写成画面，节奏顺着空气往前推`,
+        `今天这首不讲大道理，只讲{topic}怎么在我心里发光`,
+        `把平常的一个词，拆成四段鼓点和一整晚回响`
+      ];
+      const versesA = [
+        `我从{topic}里抬头，看见{lineA}`,
+        `风一吹，所有的情绪都朝着{lineB}飞`,
+        `别人还在犹豫，我已经把{word}唱成{lineC}`,
+        `这不是随口一说，是把生活压成了节拍和{lineD}`
+      ];
+      const versesB = [
+        `镜头扫过来，我的态度写在{lineE}`,
+        `低音一压，连空气都开始跟着{lineF}晃`,
+        `我把委屈藏进钩子，最后都变成{lineG}`,
+        `每个押韵落地，都像在把{word}重新点亮`
+      ];
+      const hooks = [
+        `{word}，{word}，我把它唱成{rhyme1}，
+{word}，{word}，今晚让全场都记得我。`,
+        `从{topic}到舞台，都是我自己的{rhyme2}，
+{word}一响，所有人都知道这局怎么走。`
+      ];
+      const outro = [
+        `如果你也有一个词，就把它交给我。`,
+        `我会把它变成一首歌，留在今晚的{rhyme3}里。`
+      ];
+
+      const lineA = pick(rng, ["天边的余晖", "斜坡上的灯", "刚起风的路口", "人群里最亮的背影"]);
+      const lineB = pick(rng, ["楼下的霓虹", "心里那束火", "远处的节拍", "窗外的颜色"]);
+      const lineC = pick(rng, ["副歌", "故事", "瞬间", "答案"]);
+      const lineD = pick(rng, ["余音", "火光", "浪潮", "风向"]);
+      const lineE = pick(rng, ["表情", "肩膀", "眼神", "步伐"]);
+      const lineF = pick(rng, ["发烫", "跳动", "回响", "翻涌"]);
+      const lineG = pick(rng, ["锋芒", "答案", "回响", "热浪"]);
+      const rhymes = rhymePools[rhymeWord];
+      const rhyme1 = pick(rng, rhymes);
+      const rhyme2 = pick(rng, rhymes);
+      const rhyme3 = pick(rng, rhymes);
+
+      const intro = makeUniqueLine(pick(rng, openers), { word, topic });
+      const verse1 = versesA.map(template => makeUniqueLine(template, { word, topic, lineA, lineB, lineC, lineD }));
+      const hook = makeUniqueLine(pick(rng, hooks), { word, topic, rhyme1, rhyme2 });
+      const verse2 = versesB.map(template => makeUniqueLine(template, { word, topic, lineE, lineF, lineG }));
+      const outroLine = makeUniqueLine(pick(rng, outro), { word, topic, rhyme3 });
+
+      const styleLine = `风格：${style} · 情绪：${tone} · 强度：${energy}`;
+      const audienceLine = `受众：${audience} · 节拍：适合直接口播和 live 现场`;
+      const guideLine = `方法：先扩展主题，再写主歌与副歌，最后收束成可唱的 hook。`;
+
+      return { intro, verse1, hook, verse2, outroLine, styleLine, audienceLine, guideLine };
+    }
+
+    function buildPrompt(keyword, style, tone, toneCustom, voiceLabel, bars, energy, audience, constraints, topic) {
+      const barsGuide = {
+        8: "4 段短句 + 1 个副歌，适合短视频",
+        12: "2 段主歌 + 1 个副歌 + 收束，适合演示",
+        16: "标准完整结构，适合正式输出",
+        24: "更完整的故事感，适合舞台版"
+      }[bars] || "标准完整结构";
+
+      return `你是一个中文即兴说唱生成器。
+用户可能输入一个词、一首诗、一句话，或一段文稿，你要把它扩展为一首完整 rap 歌词。
+
+输入内容：${keyword}
+主题扩展：${topic}
+风格：${style}
+情绪：${tone}${toneCustom ? ` / ${toneCustom}` : ""}
+人声：${voiceLabel}
+篇幅：${barsGuide}
+炸点强度：${energy}/10
+受众/语气：${audience}
+额外约束：${constraints || "无"}
+
+要求：
+1. 输出中文歌词，不要解释过程。
+2. 结构包含 Intro、Verse 1、Hook、Verse 2、Outro。
+3. 语言口语化、可演唱、节奏清楚。
+4. 尽量押韵，但优先保证语义自然。
+5. 根据输入词自动联想场景、情绪、冲突和画面。
+6. 不要模仿任何真实歌手的固定腔调或标志性风格。
+7. 如果用户没有额外约束，默认生成适合短视频传播的版本。`;
+    }
+
+    function buildWorkflow(keyword, style, tone, toneCustom, voiceLabel, bars, energy, audience) {
+      return [
+        `1. 识别词语类型：判断“${keyword}”更偏情绪、物体、人物、场景还是抽象概念。`,
+        `2. 主题扩展：把它映射成一个可唱的画面主题。`,
+        `3. 结构生成：按 Intro / Verse / Hook / Outro 组织。`,
+        `4. 风格控制：${style} 风格，情绪保持“${tone}${toneCustom ? ` / ${toneCustom}` : ""}”，强度 ${energy}/10。`,
+        `5. 人声适配：选择“${voiceLabel}”，让演唱人设更有记忆点。`,
+        `6. 受众适配：面向 ${audience}，让句子短、响、好唱。`,
+        `7. 后处理：统一押韵、检查节奏、保证输出可直接复制使用。`,
+        `8. 篇幅策略：${bars} 小节，避免太散或太长。`
+      ].join("\n");
+    }
+
+    async function callRemoteGenerator(baseState) {
+      const messages = buildConversationMessages(baseState);
+      const response = await fetch(settings.apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${settings.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: settings.apiModel,
+          messages,
+          temperature: 0.9,
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`API 请求失败 ${response.status}: ${text.slice(0, 240)}`);
+      }
+
+      const data = await response.json();
+      const raw = data?.choices?.[0]?.message?.content || data?.output_text || "";
+      const normalized = normalizeAIResponse(raw, baseState);
+      if (!normalized) throw new Error("无法解析模型返回的 JSON");
+      return normalized;
+    }
+
+    async function callMiniMaxLyrics(baseState) {
+      const response = await fetch(`${MINIMAX_PROXY_BASE}/api/minimax/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          apiKey: settings.apiKey,
+          model: settings.apiModel || "MiniMax-M2.7",
+          messages: [
+            {
+              role: "system",
+              content: "你是一个中文即兴说唱生成器。只输出歌词正文，不要解释，不要 JSON，不要代码块，保留 [Intro] [Verse 1] [Hook] [Verse 2] [Outro] 这样的段落标签。"
+            },
+            {
+              role: "user",
+              content: buildMiniMaxLyricsPrompt(baseState)
+            }
+          ],
+        }),
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`MiniMax 歌词接口失败 ${response.status}: ${text.slice(0, 240)}`);
+      }
+      const data = await response.json();
+      const raw = data?.choices?.[0]?.message?.content || data?.content || data?.output_text || "";
+      const normalized = normalizeMiniMaxLyricsResponse({ data: { lyrics: raw } }, baseState);
+      return normalized || null;
+    }
+
+    async function callMiniMaxMusic(state) {
+      const requestMusic = async (modelName) => {
+        const response = await fetch(`${MINIMAX_PROXY_BASE}/api/minimax/music`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            apiKey: settings.apiKey,
+            model: modelName,
+            prompt: buildMusicPrompt(state),
+            lyrics: lyricsToMusicTagText(state),
+            output_format: settings.musicFormat || "url",
+            stream: false,
+            audio_setting: {
+              sample_rate: 44100,
+              bitrate: 256000,
+              format: "mp3"
+            }
+          }),
+        });
+        const text = await response.text();
+        return { response, text };
+      };
+
+      const normalizeAudio = (data) => {
+        const candidateValues = [];
+        const visit = (value, key = "") => {
+          if (typeof value === "string") {
+            candidateValues.push({ value, key });
+            return;
+          }
+          if (!value || typeof value !== "object") return;
+          Object.entries(value).forEach(([childKey, childValue]) => visit(childValue, childKey));
+        };
+        visit(data);
+        const audioCandidate = candidateValues.find(item =>
+          /(^|_)(audio|audio_url|url|download_url|file_url|fileUrl|file|content)$/i.test(item.key) ||
+          /^https?:\/\//i.test(item.value) ||
+          /^[0-9a-f]{200,}$/i.test(item.value)
+        );
+        const audio = audioCandidate?.value || "";
+        if (!audio) {
+          const debug = JSON.stringify(data || {}).slice(0, 500);
+          throw new Error(`音乐接口没有返回音频：${debug}`);
+        }
+        if (/^https?:\/\//i.test(audio)) return { audioUrl: audio, source: "url" };
+        if (/^[0-9a-f]+$/i.test(audio)) {
+          const bytes = new Uint8Array(audio.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+          const blob = new Blob([bytes], { type: "audio/mpeg" });
+          return { audioUrl: URL.createObjectURL(blob), source: "hex" };
+        }
+        return { audioUrl: audio, source: "unknown" };
+      };
+
+      const parseErrorBody = (text, fallbackStatus) => {
+        let parsed = null;
+        try {
+          parsed = JSON.parse(text);
+        } catch (_) {}
+        const message = parsed?.status_msg || parsed?.message || text.slice(0, 240);
+        const code = parsed?.status_code || parsed?.code || fallbackStatus;
+        return { parsed, message, code };
+      };
+
+      const modelCandidates = [];
+      const primaryModel = settings.musicModel || "music-2.6";
+      modelCandidates.push(primaryModel);
+      if (primaryModel !== "music-2.6") modelCandidates.push("music-2.6");
+
+      let lastError = null;
+      for (const modelName of modelCandidates) {
+        const { response, text } = await requestMusic(modelName);
+        if (!response.ok) {
+          const err = parseErrorBody(text, response.status);
+          lastError = new Error(`MiniMax 音乐接口失败 ${response.status}: ${err.message}`);
+          const supportHint = /token plan not support model|status_code["']?\s*[:=]\s*2061|2061/i.test(`${text} ${err.message}`);
+          if (supportHint && modelName !== "music-2.6") {
+            settings.musicModel = "music-2.6";
+            if (musicModelInput) musicModelInput.value = "music-2.6";
+            saveSettings();
+            continue;
+          }
+          if (supportHint) {
+            lastError = new Error("当前 MiniMax 套餐不支持当前音乐模型，请切换到 music-2.6 后再试。");
+          }
+          throw lastError;
+        }
+        let data = {};
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (_) {
+          data = text ? { raw_text: text } : {};
+        }
+        return normalizeAudio(data);
+      }
+
+      throw lastError || new Error("MiniMax 音乐接口请求失败");
+    }
+
+    function renderToneSelect() {
+      toneSelect.innerHTML = tones.map(v => `<option value="${v}">${v}</option>`).join("");
+      toneSelect.value = "热血上头";
+    }
+
+    function renderVoiceSelect() {
+      if (!voicePresetInput) return;
+      const groupFiltered = voiceGroupFilter === "all"
+        ? voicePresets
+        : voicePresets.filter(item => item.group === voiceGroupFilter);
+      const matchedCustom = settings.voiceCustom ? findVoicePresetByText(settings.voiceCustom) : null;
+      const candidate = voicePresets.find(item => item.value === settings.voicePreset) || matchedCustom;
+      const visibleCandidate = candidate && groupFiltered.some(item => item.value === candidate.value) ? candidate : null;
+      const selectItems = groupFiltered.length ? groupFiltered : voicePresets;
+      voicePresetInput.innerHTML = [
+        `<option value="custom">按输入的人名</option>`,
+        ...selectItems.map(item => `<option value="${escapeHTML(item.value)}">${escapeHTML(item.label)}</option>`)
+      ].join("");
+      voicePresetInput.value = visibleCandidate?.value || (settings.voiceCustom ? "custom" : (selectItems[0]?.value || "custom"));
+      updateVoiceStatus();
+    }
+
+    function renderHistoryVoiceFilter() {
+      if (!historyVoiceFilterInput) return;
+      historyVoiceFilterInput.innerHTML = `
+        <option value="all">全部人声</option>
+        <optgroup label="分类">
+          <option value="male">男声</option>
+          <option value="female">女声</option>
+          <option value="child">童声</option>
+          <option value="elder">老年声</option>
+        </optgroup>
+        <optgroup label="人设">
+          ${voicePresets.map(item => `<option value="preset:${escapeHTML(item.value)}">${escapeHTML(item.label)}</option>`).join("")}
+        </optgroup>
+      `;
+      historyVoiceFilterInput.value = historyVoiceFilter;
+    }
+
+    function recordMatchesHistoryVoice(record) {
+      if (!historyVoiceFilter || historyVoiceFilter === "all") return true;
+      if (historyVoiceFilter === "male" || historyVoiceFilter === "female" || historyVoiceFilter === "child" || historyVoiceFilter === "elder") {
+        return (record.voiceGroup || "custom") === historyVoiceFilter;
+      }
+      if (historyVoiceFilter.startsWith("preset:")) {
+        return record.voicePreset === historyVoiceFilter.slice(7);
+      }
+      return true;
+    }
+
+    async function loadMiniMaxVoiceCatalog() {
+      if (!settings.apiKey) {
+        updateVoiceStatus("先配置密钥，再刷新官方音色");
+        return;
+      }
+      try {
+        updateVoiceStatus("正在刷新官方音色...");
+        const response = await fetch(`${MINIMAX_PROXY_BASE}/api/minimax/get-voice`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            apiKey: settings.apiKey,
+            voice_type: "all",
+          }),
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text.slice(0, 240));
+        }
+        const data = await response.json();
+        const total = [
+          ...(data?.system_voice || []),
+          ...(data?.voice_cloning || []),
+          ...(data?.voice_generation || [])
+        ].length;
+        updateVoiceStatus(`已刷新官方音色 ${total} 个`);
+      } catch (error) {
+        updateVoiceStatus(`刷新失败：${error.message}`);
+      }
+    }
+
+    function makeLocalState(baseState, seedSalt = "") {
+      const seed = seedFrom([baseState.keyword, baseState.style, baseState.tone, baseState.toneCustom || "", baseState.bars, baseState.energy, baseState.audience, baseState.constraints, seedSalt]);
+      const rng = mulberry32(seed);
+      const sections = lineSet(baseState.topic, baseState.keyword, baseState.style, baseState.tone, baseState.energy, baseState.audience, baseState.rhymeFamily, rng);
+      return {
+        ...baseState,
+        source: "local",
+        assistantBrief: `本地模式下，我把“${baseState.keyword}”扩展成了 ${baseState.topic}。`,
+        sections: {
+          intro: formatRapText(sections.intro, settings.rhythmMode),
+          verse1: formatSectionLines(sections.verse1, settings.rhythmMode),
+          hook: formatRapText(sections.hook, settings.rhythmMode),
+          verse2: formatSectionLines(sections.verse2, settings.rhythmMode),
+          outroLine: formatRapText(sections.outroLine, settings.rhythmMode),
+        },
+        rhythmNotes: [
+          "主歌用短句推进，副歌重复关键词形成记忆点。",
+          `当前强度 ${baseState.energy}/10，适合 ${baseState.audience}。`,
+          settings.rhythmMode ? "已经按断句优化，便于直接口播。" : "未开启节奏整理。"
+        ],
+        followUps: localFollowUps(baseState),
+      };
+    }
+
+    function renderOutput(state) {
+      const { keyword, style, tone, toneCustom = "", voicePreset = "", voiceCustom = "", voiceGroup = "", bars, energy, audience, constraints, sections, topic, rhymeFamily, rhythmNotes = [], followUps = [], source = "local", audioUrl = "", songStatusText = "" } = state;
+      resultSummary.textContent = `“${summarizeInput(keyword)}” 的 ${style} 风格 ${bars} 小节 rap 已生成。`;
+      resultMeta.textContent = `${energyMap[energy]} · ${rhymeFamily.toUpperCase()} 韵 · ${source === "ai" ? "AI" : "本地"}`;
+      output.innerHTML = `
+        <div class="section">
+          <h3>输入分析</h3>
+          <div class="note">输入：${keyword} · 主题扩展：${topic} · 风格：${style} · 情绪：${tone}${toneCustom ? ` / ${toneCustom}` : ""} · 人设：${getVoicePromptLabel(state)}${voiceGroup ? ` · 分类：${getVoiceGroupLabel(voiceGroup)}` : ""}${voicePreset ? ` · 音色 ID：${voicePreset}` : ""} · 受众：${audience}${constraints ? ` · 约束：${constraints}` : ""}</div>
+        </div>
+        <div class="section">
+          <h3>Intro</h3>
+          <div class="lyrics">${sections.intro}</div>
+        </div>
+        <div class="section">
+          <h3>Verse 1</h3>
+          <div class="lyrics">${sections.verse1.join("\n")}</div>
+        </div>
+        <div class="section">
+          <h3>Hook</h3>
+          <div class="lyrics">${sections.hook}</div>
+        </div>
+        <div class="section">
+          <h3>Verse 2</h3>
+          <div class="lyrics">${sections.verse2.join("\n")}</div>
+        </div>
+        <div class="section">
+          <h3>Outro</h3>
+          <div class="lyrics">${sections.outroLine}</div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <h3>节奏整理</h3>
+            <span class="small">${settings.rhythmMode ? "自动断句已开启" : "未自动整理"}</span>
+          </div>
+          <div class="note">${rhythmNotes.length ? rhythmNotes.map(item => `• ${item}`).join("\n") : "这版已经自动把长句拆短，方便直接唱出来。"}</div>
+        </div>
+      `;
+      const voiceLabel = getVoicePromptLabel(state);
+      const voiceTag = state.voiceGroup ? `${voiceLabel} / ${getVoiceGroupLabel(state.voiceGroup)}` : voiceLabel;
+      promptPreview.textContent = buildPrompt(keyword, style, tone, toneCustom, voiceTag, bars, energy, audience, constraints, topic);
+      workflowPreview.textContent = buildWorkflow(keyword, style, tone, toneCustom, voiceTag, bars, energy, audience);
+      renderConversation(state);
+      renderQuestionBank(followUps.length ? followUps : localFollowUps(state));
+      if (audioUrl) {
+        if (lastAudioObjectUrl && lastAudioObjectUrl.startsWith("blob:") && lastAudioObjectUrl !== audioUrl) {
+          URL.revokeObjectURL(lastAudioObjectUrl);
+        }
+        lastAudioObjectUrl = audioUrl;
+        audioPlayer.src = audioUrl;
+        audioPlayer.style.display = "block";
+        renderMusicSubtitlesFromSections(buildSubtitleSectionsFromState(state), songStatusText || "已生成音频");
+        singMeta.textContent = songStatusText || "已生成音频";
+        syncMusicSubtitleTimeline();
+      } else {
+        audioPlayer.removeAttribute("src");
+        audioPlayer.style.display = "none";
+        currentMusicCues = [];
+        activeMusicCueIndex = -1;
+        if (musicSubtitlesEl) musicSubtitlesEl.classList.remove("active");
+        if (musicSubtitlesTrackEl) musicSubtitlesTrackEl.innerHTML = "";
+        if (musicSubtitlesMetaEl) musicSubtitlesMetaEl.textContent = "等待播放";
+        singMeta.textContent = songStatusText || "等待生成";
+      }
+    }
+
+    function renderHistory() {
+      const visibleHistory = generationHistory.filter(recordMatchesHistoryVoice);
+      historyCountEl.textContent = historyVoiceFilter === "all"
+        ? `${generationHistory.length} 条记录`
+        : `${visibleHistory.length} / ${generationHistory.length} 条记录`;
+      if (!visibleHistory.length) {
+        historyListEl.innerHTML = generationHistory.length
+          ? `<div class="history-empty">当前筛选没有记录，换一个人声分类试试。</div>`
+          : `<div class="history-empty">还没有生成历史。先输入一个词，生成歌词吧。</div>`;
+        return;
+      }
+      historyListEl.innerHTML = visibleHistory.map(record => {
+        const open = expandedHistoryIds.has(record.id);
+        const isPlaying = activePlaybackRecordId === record.id && activePlaybackState === "playing" && audioPlayer.src;
+        const isPaused = activePlaybackRecordId === record.id && activePlaybackState === "paused" && audioPlayer.src;
+        const tagBits = [
+          record.style,
+          record.toneCustom ? `${record.tone} / ${record.toneCustom}` : record.tone,
+          record.voiceCustom ? `人声：${record.voiceCustom}` : `人声：${record.voicePreset || "默认"}`,
+          `分类：${getVoiceGroupLabel(record.voiceGroup || "custom")}`,
+          `${record.bars} 小节`,
+          record.source === "ai" ? "AI" : "本地",
+          record.hasAudio ? "可播放" : "无音频"
+        ];
+        return `
+          <article class="history-item ${open ? "open" : ""}" data-id="${escapeHTML(record.id)}">
+            <div class="history-head">
+              <div class="history-title-row">
+                <div>
+                  <h3 class="history-title">${escapeHTML(record.title || `${summarizeInput(record.keyword)} · RAP`)}</h3>
+                  <div class="history-meta">${escapeHTML(formatHistoryTime(record.createdAt))} · ${escapeHTML(record.songStatusText || "已完成")}</div>
+                </div>
+                <div class="history-actions">
+                  <button class="btn secondary tiny" data-action="play">${isPlaying ? "停止播放" : isPaused ? "继续播放" : "播放"}</button>
+                  <button class="btn secondary tiny" data-action="download">下载</button>
+                  <button class="btn secondary tiny" data-action="folder">${open ? "收起文件夹" : "跳到文件夹"}</button>
+                  <button class="btn secondary tiny" data-action="delete">删除</button>
+                </div>
+              </div>
+              <div class="history-tags">
+                ${tagBits.map(bit => `<span class="history-tag">${escapeHTML(bit)}</span>`).join("")}
+              </div>
+            </div>
+            <div class="history-body">
+              <div class="history-block">
+                <h4>歌词</h4>
+                <pre class="history-pre">${escapeHTML(record.lyricsText || "")}</pre>
+              </div>
+              <div class="history-block">
+                <h4>提示词</h4>
+                <pre class="history-pre">${escapeHTML(record.promptText || "")}</pre>
+              </div>
+              <div class="history-block">
+                <h4>文件夹</h4>
+                <div class="note">这条记录对应一个独立的“文件夹视图”。你可以在这里查看歌词、提示词和音频状态，也可以直接播放或删除。</div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      historyListEl.querySelectorAll(".history-item").forEach(item => {
+        const id = item.getAttribute("data-id");
+        const actionButtons = item.querySelectorAll("button[data-action]");
+        actionButtons.forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const action = btn.getAttribute("data-action");
+            const record = generationHistory.find(r => r.id === id);
+            if (!record) return;
+            if (action === "folder") {
+              if (expandedHistoryIds.has(id)) expandedHistoryIds.delete(id);
+              else expandedHistoryIds.add(id);
+              renderHistory();
+              requestAnimationFrame(() => {
+                const target = historyListEl.querySelector(`.history-item[data-id="${CSS.escape(id)}"]`);
+                target?.scrollIntoView({ behavior: "smooth", block: "start" });
+              });
+              return;
+            }
+            if (action === "delete") {
+              const deletingCurrent = activePlaybackRecordId === id;
+              if (deletingCurrent) {
+                stopAudioPlayback(`已删除历史：${record.keyword}`);
+                activePlaybackRecordId = "";
+                activePlaybackState = "idle";
+                if (lastAudioObjectUrl && lastAudioObjectUrl.startsWith("blob:")) {
+                  URL.revokeObjectURL(lastAudioObjectUrl);
+                }
+                lastAudioObjectUrl = "";
+                audioPlayer.removeAttribute("src");
+                audioPlayer.style.display = "none";
+                audioPlayer.load?.();
+              }
+              generationHistory = generationHistory.filter(r => r.id !== id);
+              expandedHistoryIds.delete(id);
+              saveGenerationHistory();
+              await deleteHistoryAudio(id).catch(() => {});
+              renderHistory();
+              return;
+            }
+            if (action === "download") {
+              await downloadHistoryRecord(record);
+              return;
+            }
+            if (action === "play") {
+              await playHistoryRecord(record);
+            }
+          });
+        });
+      });
+    }
+
+    async function persistGenerationRecord(state) {
+      const sectionsSnapshot = state?.sections
+        ? {
+            intro: Array.isArray(state.sections.intro) ? state.sections.intro.join("\n") : String(state.sections.intro || ""),
+            verse1: Array.isArray(state.sections.verse1) ? state.sections.verse1.join("\n") : String(state.sections.verse1 || ""),
+            hook: Array.isArray(state.sections.hook) ? state.sections.hook.join("\n") : String(state.sections.hook || ""),
+            verse2: Array.isArray(state.sections.verse2) ? state.sections.verse2.join("\n") : String(state.sections.verse2 || ""),
+            outroLine: Array.isArray(state.sections.outroLine) ? state.sections.outroLine.join("\n") : String(state.sections.outroLine || ""),
+          }
+        : null;
+      const record = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+        createdAt: Date.now(),
+        keyword: state.keyword,
+        title: state.title || `${summarizeInput(state.keyword)} · RAP`,
+        style: state.style,
+        tone: state.tone,
+        toneCustom: state.toneCustom || "",
+        voiceGroup: state.voiceGroup || "",
+        bars: state.bars,
+        energy: state.energy,
+        audience: state.audience,
+        topic: state.topic,
+        source: state.source || "local",
+        songStatusText: state.songStatusText || "",
+        sectionsSnapshot,
+        lyricsText: buildLyricsText(state),
+        promptText: promptPreview.textContent || "",
+        audioUrl: /^https?:\/\//i.test(state.audioUrl || "") || /^data:/i.test(state.audioUrl || "") ? state.audioUrl : "",
+        hasAudio: Boolean(state.audioUrl),
+      };
+
+      generationHistory = [record, ...generationHistory.filter(item => item.id !== record.id)].slice(0, 20);
+      saveGenerationHistory();
+      renderHistory();
+
+      if (state.audioUrl) {
+        try {
+          const blob = await fetchAudioBlob(state.audioUrl);
+          if (!blob) return;
+          await saveHistoryAudio(record.id, blob);
+          record.hasAudio = true;
+          saveGenerationHistory();
+          renderHistory();
+        } catch (error) {
+          console.warn("save history audio failed", error);
+        }
+      }
+    }
+
+    async function downloadHistoryRecord(record) {
+      try {
+        let blob = null;
+        if (record.audioUrl) {
+          blob = await fetchAudioBlob(record.audioUrl);
+        } else {
+          blob = await loadHistoryAudio(record.id);
+        }
+        if (!blob) {
+          singMeta.textContent = "这条历史没有可下载的音频";
+          return;
+        }
+        const safe = (record.keyword || "rap").replace(/[^\w\u4e00-\u9fa5-]/g, "_");
+        triggerDownload(`${safe}-minimax.mp3`, blob);
+        singMeta.textContent = `已开始下载历史：${record.keyword}`;
+      } catch (error) {
+        singMeta.textContent = `下载失败：${error.message}`;
+      }
+    }
+
+    async function playHistoryRecord(record) {
+      try {
+        let src = record.audioUrl || "";
+        if (!src) {
+          const blob = await loadHistoryAudio(record.id);
+          if (blob) src = URL.createObjectURL(blob);
+        }
+        if (!src) {
+          singMeta.textContent = "这条历史没有可播放的音频";
+          return;
+        }
+        if (activePlaybackRecordId === record.id) {
+          if (activePlaybackState === "playing") {
+            stopAudioPlayback(`已停止历史：${record.keyword}`);
+          } else {
+            try {
+              await audioPlayer.play();
+              activePlaybackState = "playing";
+              singMeta.textContent = `继续播放历史：${record.keyword}`;
+            } catch (error) {
+              singMeta.textContent = `播放失败：${error.message}`;
+            }
+            renderHistory();
+          }
+          return;
+        }
+        if (lastAudioObjectUrl && lastAudioObjectUrl.startsWith("blob:") && lastAudioObjectUrl !== src) {
+          URL.revokeObjectURL(lastAudioObjectUrl);
+        }
+        lastAudioObjectUrl = src;
+        audioPlayer.src = src;
+        audioPlayer.style.display = "block";
+        renderMusicSubtitlesFromSections(buildSubtitleSectionsFromRecord(record), `历史播放 · ${record.keyword}`);
+        syncMusicSubtitleTimeline();
+        await audioPlayer.play().catch(() => {});
+        activePlaybackRecordId = record.id;
+        activePlaybackState = "playing";
+        singMeta.textContent = `正在播放历史：${record.keyword}`;
+        renderHistory();
+      } catch (error) {
+        singMeta.textContent = `播放失败：${error.message}`;
+      }
+    }
+
+    async function generate(salt = "") {
+      const isSingRequest = salt === "sing";
+      const keyword = keywordInput.value.trim() || "灵感";
+      const style = getSelectedStyle();
+      activeStyle = style;
+      const tone = getSelectedTone();
+      const toneCustom = toneCustomInput.value.trim();
+      const bars = Number(barsSelect.value);
+      const energy = Number(energyInput.value);
+      const audience = audienceSelect.value;
+      const constraints = constraintsInput.value.trim();
+      const voiceGroup = getSelectedVoiceGroup();
+      const voicePreset = voicePresetInput.value;
+      const voiceCustom = voiceCustomInput.value.trim();
+      const topic = detectTheme(keyword);
+      const rhymeFamily = detectRhymeFamily(keyword + style, style);
+      const baseState = { keyword, style, tone, toneCustom, voiceGroup, voicePreset, voiceCustom, bars, energy, audience, constraints, topic, rhymeFamily };
+      readSettingsFromUI();
+      updateApiStatus();
+      setLoading(true, settings.aiMode ? "AI 生成中..." : "生成中...");
+      if (isSingRequest) {
+        updateSingState({
+          mode: "loading",
+          percent: 6,
+          title: "正在生成歌曲",
+          detail: "先整理歌词，再交给 MiniMax 配乐和唱出来。",
+          meta: "准备中",
+        });
+      } else {
+        updateSingState({ mode: "idle" });
+      }
+      updateGenerationBoard({
+        percent: 8,
+        stage: "读取输入",
+        detail: `正在读取“${keyword}”和当前配置。`,
+        step: 0,
+        done: false,
+      });
+
+      if (!settings.memoryMode) clearConversationIfNeeded();
+      const shouldLogUser = !["live-update", "settings-update"].includes(salt);
+      if (settings.memoryMode && shouldLogUser) {
+        conversation.push({ role: "user", content: `输入内容：${keyword}；风格：${style}；情绪：${tone}${toneCustom ? ` / ${toneCustom}` : ""}；人声：${getVoicePromptLabel(baseState)}；篇幅：${bars}；约束：${constraints || "无"}` });
+        saveConversation();
+      }
+
+      let nextState;
+      try {
+        if (settings.providerMode === "minimax-full" && settings.apiKey) {
+          updateGenerationBoard({
+            percent: 22,
+            stage: "生成歌词",
+            detail: "MiniMax 正在生成歌词结构与段落。",
+            step: 1,
+            done: false,
+          });
+          updateMusicStatus("MiniMax 正在生成歌词...");
+          if (isSingRequest) {
+            updateSingState({
+              mode: "loading",
+              percent: 28,
+              title: "正在生成歌词",
+              detail: "MiniMax 正在写歌词和结构。",
+              meta: "歌词阶段",
+            });
+          }
+          nextState = await callMiniMaxLyrics(baseState);
+          if (!nextState) {
+            nextState = makeLocalState(baseState, `${salt}-minimax-text-fallback`);
+            nextState.source = "minimax-text-fallback";
+            nextState.assistantBrief = "MiniMax 歌词这次没有返回可解析结构，已自动用本地歌词兜底，再继续让 MiniMax 唱出来。";
+          }
+          updateGenerationBoard({
+            percent: 68,
+            stage: "配乐演唱",
+            detail: "歌词已准备好，正在交给 MiniMax 做配乐和演唱。",
+            step: 2,
+            done: false,
+          });
+          updateMusicStatus("MiniMax 正在配乐和演唱...");
+          if (isSingRequest) {
+            updateSingState({
+              mode: "loading",
+              percent: 68,
+              title: "正在配乐演唱",
+              detail: "歌词已经准备好，正在生成可播放的歌曲。",
+              meta: "配乐阶段",
+            });
+          }
+          const music = await callMiniMaxMusic(nextState);
+          nextState.audioUrl = music.audioUrl;
+          nextState.songStatusText = `MiniMax 已生成音频 (${music.source})`;
+          updateMusicStatus(nextState.songStatusText);
+          updateGenerationBoard({
+            percent: 88,
+            stage: "整理结果",
+            detail: "音频已返回，正在整理歌词、播放器和历史记录。",
+            step: 3,
+            done: false,
+          });
+        } else if (settings.providerMode === "minimax-music" && settings.apiKey) {
+          updateGenerationBoard({
+            percent: 24,
+            stage: "本地歌词",
+            detail: "先在本地把歌词结构拼好，再交给 MiniMax。",
+            step: 1,
+            done: false,
+          });
+          nextState = makeLocalState(baseState, salt);
+          updateGenerationBoard({
+            percent: 70,
+            stage: "配乐演唱",
+            detail: "MiniMax 正在给本地歌词配乐和演唱。",
+            step: 2,
+            done: false,
+          });
+          updateMusicStatus("MiniMax 正在配乐和演唱...");
+          if (isSingRequest) {
+            updateSingState({
+              mode: "loading",
+              percent: 68,
+              title: "正在配乐演唱",
+              detail: "本地歌词已经准备好，正在生成可播放的歌曲。",
+              meta: "配乐阶段",
+            });
+          }
+          const music = await callMiniMaxMusic(nextState);
+          nextState.audioUrl = music.audioUrl;
+          nextState.songStatusText = `MiniMax 已生成音频 (${music.source})`;
+          updateMusicStatus(nextState.songStatusText);
+          updateGenerationBoard({
+            percent: 88,
+            stage: "整理结果",
+            detail: "音频已返回，正在整理到播放区和历史里。",
+            step: 3,
+            done: false,
+          });
+        } else if (settings.aiMode && settings.apiKey) {
+          updateGenerationBoard({
+            percent: 35,
+            stage: "AI 生成",
+            detail: "正在请求你的大模型接口，生成歌词内容。",
+            step: 1,
+            done: false,
+          });
+          nextState = await callRemoteGenerator(baseState);
+          updateGenerationBoard({
+            percent: 82,
+            stage: "整理结果",
+            detail: "AI 歌词已返回，正在渲染页面。",
+            step: 3,
+            done: false,
+          });
+        } else {
+          updateGenerationBoard({
+            percent: 35,
+            stage: "本地生成",
+            detail: "正在使用本地生成器写歌词和断句。",
+            step: 1,
+            done: false,
+          });
+          nextState = makeLocalState(baseState, salt);
+          updateGenerationBoard({
+            percent: 82,
+            stage: "整理结果",
+            detail: "本地歌词已生成，正在渲染到页面。",
+            step: 3,
+            done: false,
+          });
+        }
+        if (settings.memoryMode) {
+          conversation.push({ role: "assistant", content: nextState.assistantBrief || `${nextState.keyword} 已生成。` });
+          saveConversation();
+        }
+      } catch (error) {
+        console.error(error);
+        nextState = makeLocalState(baseState, `${salt}-fallback`);
+        nextState.assistantBrief = `真实 AI 调用失败，已自动切回本地模式。`;
+        nextState.followUps = [...localFollowUps(nextState), "我想继续用真实 AI 生成"];
+        nextState.songStatusText = `生成失败：${error.message}`;
+        conversation.push({ role: "assistant", content: `真实 AI 调用失败：${error.message}` });
+        saveConversation();
+        updateMusicStatus(nextState.songStatusText);
+        if (isSingRequest) {
+          updateSingState({
+            mode: "error",
+            percent: 100,
+            title: "生成失败",
+            detail: nextState.songStatusText,
+            meta: "失败",
+          });
+        }
+        updateGenerationBoard({
+          percent: 100,
+          stage: "失败",
+          detail: `生成失败：${error.message}`,
+          step: 3,
+          done: true,
+        });
+      }
+
+      lastState = nextState;
+      renderOutput(nextState);
+      if (isSingRequest && nextState?.audioUrl) {
+        updateSingState({
+          mode: "success",
+          percent: 100,
+          title: "生成完成",
+          detail: nextState.songStatusText || "歌曲已生成，可以播放或下载。",
+          meta: "成功",
+        });
+      } else if (isSingRequest && !nextState?.audioUrl) {
+        updateSingState({
+          mode: "error",
+          percent: 100,
+          title: "生成完成但无音频",
+          detail: nextState?.songStatusText || "歌曲生成了，但没有拿到可播放音频。",
+          meta: "无音频",
+        });
+      }
+      if (isSingRequest && nextState?.audioUrl) {
+        void persistGenerationRecord(nextState);
+      }
+      setLoading(false);
+      if (!isSingRequest) updateSingState({ mode: "idle" });
+      return nextState;
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        resultMeta.textContent = "已复制";
+        setTimeout(() => {
+          if (lastState) {
+            resultMeta.textContent = `${energyMap[lastState.energy]} · ${lastState.rhymeFamily.toUpperCase()} 韵`;
+          }
+        }, 1200);
+      });
+    }
+
+    function buildLyricsText(state) {
+      const { keyword, style, tone, toneCustom = "", voicePreset = "", voiceCustom = "", voiceGroup = "", bars, energy, audience, constraints, sections, topic, rhythmNotes = [], title = "" } = state;
+      const flatten = (value) => Array.isArray(value) ? value.join("\n") : String(value || "");
+      return [
+        `一词成歌 · RAP 智能体`,
+        title ? `歌名：${title}` : null,
+        `关键词：${keyword}`,
+        `风格：${style}`,
+        `情绪：${tone}${toneCustom ? ` / ${toneCustom}` : ""}`,
+        `人设：${getVoicePromptLabel(state)}${voiceGroup ? ` / ${getVoiceGroupLabel(voiceGroup)}` : ""}${voicePreset ? ` / ${voicePreset}` : ""}${voiceCustom ? ` / ${voiceCustom}` : ""}`,
+        `篇幅：${bars} 小节`,
+        `炸点强度：${energy}/10`,
+        `受众：${audience}`,
+        constraints ? `约束：${constraints}` : null,
+        `主题扩展：${topic}`,
+        rhythmNotes.length ? `节奏提示：${rhythmNotes.join(" | ")}` : null,
+        ``,
+        `Intro`,
+        flatten(sections.intro),
+        ``,
+        `Verse 1`,
+        flatten(sections.verse1),
+        ``,
+        `Hook`,
+        flatten(sections.hook),
+        ``,
+        `Verse 2`,
+        flatten(sections.verse2),
+        ``,
+        `Outro`,
+        flatten(sections.outroLine)
+      ].filter(Boolean).join("\n");
+    }
+
+    document.getElementById("generateBtn").addEventListener("click", () => generate());
+    document.getElementById("regenBtn").addEventListener("click", () => generate(String(Date.now())));
+    document.getElementById("randomBtn").addEventListener("click", () => {
+      keywordInput.value = pick(mulberry32(Date.now()), randomWords);
+      generate(String(Date.now()));
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", () => {
+      if (lastState) copyText(buildLyricsText(lastState));
+    });
+
+    document.getElementById("copyPromptBtn").addEventListener("click", () => {
+      if (lastState) copyText(promptPreview.textContent);
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      if (!lastState) {
+        resultMeta.textContent = "请先生成歌词，再下载";
+        return;
+      }
+      const safe = lastState.keyword.replace(/[^\w\u4e00-\u9fa5-]/g, "_");
+      triggerDownload(`${safe}-rap.txt`, new Blob([buildLyricsText(lastState)], { type: "text/plain;charset=utf-8" }));
+      resultMeta.textContent = "歌词已开始下载";
+    });
+
+    singBtn.addEventListener("click", async () => {
+      await generate("sing");
+    });
+
+    downloadAudioBtn.addEventListener("click", () => {
+      if (!audioPlayer.src) {
+        singMeta.textContent = "请先生成歌曲，再下载音频";
+        return;
+      }
+      const filename = `${(lastState?.keyword || "rap")}-minimax.mp3`;
+      fetchAudioBlob(audioPlayer.src)
+        .then(blob => {
+          if (!blob) throw new Error("没有可下载的音频");
+          triggerDownload(filename, blob);
+          singMeta.textContent = "音频已开始下载";
+        })
+        .catch(error => {
+          singMeta.textContent = `下载失败：${error.message}`;
+        });
+    });
+
+    audioPlayer.addEventListener("loadedmetadata", () => {
+      syncMusicSubtitleTimeline();
+    });
+
+    audioPlayer.addEventListener("durationchange", () => {
+      syncMusicSubtitleTimeline();
+    });
+
+    audioPlayer.addEventListener("timeupdate", () => {
+      updateMusicSubtitleByTime(audioPlayer.currentTime || 0);
+    });
+
+    audioPlayer.addEventListener("seeked", () => {
+      syncMusicSubtitleTimeline();
+    });
+
+    audioPlayer.addEventListener("ended", () => {
+      activePlaybackRecordId = "";
+      activePlaybackState = "idle";
+      renderHistory();
+    });
+
+    audioPlayer.addEventListener("play", () => {
+      activePlaybackState = "playing";
+      renderHistory();
+    });
+
+    audioPlayer.addEventListener("pause", () => {
+      if (activePlaybackRecordId) {
+        activePlaybackState = "paused";
+      }
+      renderHistory();
+    });
+
+    followUpApplyBtn?.addEventListener("click", () => {
+      applyCustomFollowUpDirection();
+    });
+
+    followUpCustomInput?.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        applyCustomFollowUpDirection();
+      }
+    });
+
+    energyInput.addEventListener("input", () => {
+      energyValue.textContent = `${energyInput.value}/10`;
+    });
+
+    [keywordInput, toneSelect, toneCustomInput, barsSelect, audienceSelect, constraintsInput].forEach(node => {
+      node.addEventListener("input", () => {
+        if (lastState && !settings.aiMode) scheduleLiveGenerate("live-update");
+      });
+      node.addEventListener("change", () => {
+        if (lastState && !settings.aiMode) scheduleLiveGenerate("live-update");
+      });
+    });
+
+    stylePresetInput.addEventListener("change", () => {
+      readSettingsFromUI();
+      if (lastState && !settings.aiMode) scheduleLiveGenerate("style-update");
+    });
+
+    styleCustomInput.addEventListener("input", () => {
+      readSettingsFromUI();
+      if (lastState && !settings.aiMode) scheduleLiveGenerate("style-update");
+    });
+
+    toneCustomInput.addEventListener("input", () => {
+      readSettingsFromUI();
+      if (lastState && !settings.aiMode) scheduleLiveGenerate("tone-update");
+    });
+
+    voicePresetInput.addEventListener("change", () => {
+      if (voicePresetInput.value !== "custom") {
+        const matched = voicePresets.find(item => item.value === voicePresetInput.value);
+        if (matched?.group) setVoiceGroupFilter(matched.group, { quiet: true });
+        if (matched && (!voiceCustomInput.value.trim() || findVoicePresetByText(voiceCustomInput.value))) {
+          voiceCustomInput.value = matched.aliases[0] || matched.label;
+        }
+      }
+      readSettingsFromUI();
+      updateVoiceStatus();
+      if (lastState) generate("voice-update");
+    });
+
+    voiceCustomInput.addEventListener("input", () => {
+      const matched = findVoicePresetByText(voiceCustomInput.value);
+      if (matched) {
+        voicePresetInput.value = matched.value;
+        if (matched.group) setVoiceGroupFilter(matched.group, { quiet: true });
+      } else if (voiceCustomInput.value.trim()) {
+        voicePresetInput.value = "custom";
+      }
+      readSettingsFromUI();
+      updateVoiceStatus();
+      if (lastState && !settings.aiMode) scheduleLiveGenerate("voice-update");
+    });
+
+    refreshVoiceBtn.addEventListener("click", () => {
+      void loadMiniMaxVoiceCatalog();
+    });
+
+    voiceGroupButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const group = button.getAttribute("data-voice-group") || "all";
+        setVoiceGroupFilter(group);
+        readSettingsFromUI();
+        renderVoiceSelect();
+        if (lastState && !settings.aiMode) scheduleLiveGenerate("voice-update");
+      });
+    });
+
+    historyVoiceFilterInput?.addEventListener("change", () => {
+      historyVoiceFilter = historyVoiceFilterInput.value || "all";
+      settings.historyVoiceFilter = historyVoiceFilter;
+      saveSettings();
+      renderHistory();
+    });
+
+    [aiModeInput, memoryModeInput, rhythmModeInput].forEach(node => {
+      node.addEventListener("change", () => {
+        readSettingsFromUI();
+        if (lastState) generate("settings-update");
+      });
+    });
+
+    providerModeInput.addEventListener("change", () => {
+      readSettingsFromUI();
+      saveSettings();
+      updateApiStatus();
+      updateMusicStatus();
+      if (lastState) generate("settings-update");
+    });
+
+    [apiEndpointInput, apiModelInput, apiKeyInput].forEach(node => {
+      node.addEventListener("input", () => {
+        readSettingsFromUI();
+      });
+      node.addEventListener("change", () => {
+        readSettingsFromUI();
+      });
+    });
+
+    settingsToggleBtn.addEventListener("click", () => {
+      if (settingsShellEl.classList.contains("open")) {
+        closeSettings();
+      } else {
+        openSettings(activeSettingsTab || "ai");
+      }
+    });
+
+    jumpArchiveBtn?.addEventListener("click", () => {
+      archiveSuiteSectionEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+      closeSettings();
+    });
+
+    settingsTabAiBtn?.addEventListener("click", () => setSettingsTab("ai"));
+    settingsTabHistoryBtn?.addEventListener("click", () => setSettingsTab("history"));
+    settingsBackdropEl?.addEventListener("click", () => closeSettings());
+    settingsShellEl?.addEventListener("click", event => {
+      if (event.target === settingsShellEl) closeSettings();
+    });
+    installAppBtn?.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      try {
+        await deferredInstallPrompt.userChoice;
+      } catch (_) {}
+      deferredInstallPrompt = null;
+      updateInstallButton();
+    });
+    document.addEventListener("click", event => {
+      const target = event.target instanceof Element ? event.target.closest("button") : null;
+      if (!target) return;
+      flashControlFeedback(target);
+      playUiClickSound();
+    }, true);
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && settingsShellEl.classList.contains("open")) {
+        closeSettings();
+        return;
+      }
+      if (event.code === "Space" || event.key === " ") {
+        if (isTypingTarget(event.target)) return;
+        if (!audioPlayer.src) return;
+        event.preventDefault();
+        if (audioPlayer.paused) {
+          audioPlayer.play().catch(() => {});
+        } else {
+          audioPlayer.pause();
+        }
+      }
+    });
+
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      updateInstallButton();
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      updateInstallButton();
+      resultMeta.textContent = "应用已安装";
+    });
+
+    if ("serviceWorker" in navigator && location.protocol !== "file:") {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+
+    loadSettings();
+    loadConversation();
+    loadGenerationHistory();
+    syncSettingsToUI();
+    renderToneSelect();
+    energyValue.textContent = `${energyInput.value}/10`;
+    renderHistory();
+    updateGenerationBoard({
+      percent: 0,
+      stage: "待命",
+      detail: "等待开始。输入一段内容，然后点击生成。",
+      step: -1,
+      done: false,
+    });
+    closeSettings();
+    updateInstallButton();
+  </script>
+</body>
+</html>
