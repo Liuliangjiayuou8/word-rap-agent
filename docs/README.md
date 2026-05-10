@@ -8,6 +8,9 @@
 - [02-技术规范](./02-technical-spec.md)
 - [03-设计规范](./03-design-spec.md)
 - [04-执行步骤](./04-execution-playbook.md)
+- [05-网页部署](./05-web-deploy.md)
+- [06-PWA 说明](./06-pwa-notes.md)
+- [07-GitHub + Render](./07-github-render.md)
 
 ## 使用原则
 
@@ -16,3 +19,4 @@
 3. 涉及页面布局、交互、视觉语言，先看设计规范。
 4. 真正动手前，先按执行步骤做最小闭环，再扩展功能。
 5. 如果代码和文档冲突，以文档里最新的标准为准，并同步更新文档。
+6. 对外发布相关信息，优先同步到 `README.md` 和 `07-github-render.md`。

@@ -50,7 +50,18 @@
 
 ## 对外测试链接
 
-真正的测试链接需要在部署平台发布成功后生成。
+当前线上可用地址：
+
+- `https://word-rap-agent.onrender.com`
+
 当前本地可用地址仍然是：
 
 - `http://127.0.0.1:4180/index.html`
+
+## 当前发布备注
+
+- 已发布到 Render 免费版。
+- 免费版会在空闲后休眠，首次访问可能需要等待几十秒。
+- 当前部署使用：
+  - Build Command：`npm install`
+  - Start Command：`npm start`

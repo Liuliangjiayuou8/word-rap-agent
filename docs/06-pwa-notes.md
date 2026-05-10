@@ -31,3 +31,7 @@
 - 朋友直接点链接打开
 - 支持安装成桌面 / 主屏幕应用
 - 同时还能正常走 MiniMax 代理链路
+
+当前线上地址：
+
+- `https://word-rap-agent.onrender.com`

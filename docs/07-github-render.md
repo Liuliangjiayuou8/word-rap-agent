@@ -3,38 +3,31 @@
 当前项目已经完成：
 
 - 本地 Git 仓库初始化
-- 首次提交
+- GitHub 仓库创建并推送
 - Render 配置文件
 - PWA 基础配置
+- Render 免费版发布成功
 
-## 当前本地状态
+## 当前仓库状态
 
 - 分支：`main`
-- 首次提交：`Initial web and PWA app`
+- GitHub：`https://github.com/Liuliangjiayuou8/word-rap-agent`
+- Render：`https://word-rap-agent.onrender.com`
 
-## GitHub 建议流程
+## 已完成的 GitHub 流程
 
-在 GitHub 登录完成后，可以直接执行：
+- GitHub 登录完成
+- 仓库已创建为公开仓库
+- 本地代码已推送到远端 `main`
 
-```bash
-cd /Users/maoshan/Desktop/ppt/word-rap-agent
-gh repo create word-rap-agent --public --source=. --remote=origin --push
-```
-
-如果你想建私有仓库：
-
-```bash
-cd /Users/maoshan/Desktop/ppt/word-rap-agent
-gh repo create word-rap-agent --private --source=. --remote=origin --push
-```
-
-## Render 建议流程
+## 已完成的 Render 流程
 
 1. 登录 Render
 2. 选择 New Web Service
 3. 连接 GitHub 仓库 `word-rap-agent`
-4. Render 会读取项目中的 `render.yaml`
-5. 部署完成后获得公网链接
+4. 手动确认构建命令与启动命令
+5. 选择 Free 实例
+6. 部署完成后获得公网链接
 
 ## 说明
 
@@ -45,3 +38,18 @@ gh repo create word-rap-agent --private --source=. --remote=origin --push
 - `/api/fetch-file`
 
 所以需要能运行 Node.js 服务的平台。
+
+## 当前上线参数
+
+- Build Command：`npm install`
+- Start Command：`npm start`
+- 实例类型：`Free`
+
+## 维护建议
+
+- README 中始终保持：
+  - 仓库地址
+  - 在线地址
+  - 本地启动方式
+  - 免费版冷启动说明
+- 每次重新部署后，检查 GitHub 首页说明和线上地址是否一致。
